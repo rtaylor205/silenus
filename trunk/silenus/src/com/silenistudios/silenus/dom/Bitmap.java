@@ -1,8 +1,6 @@
 package com.silenistudios.silenus.dom;
 
 import java.io.File;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import com.silenistudios.silenus.xml.Node;
 
 import com.silenistudios.silenus.ParseException;
@@ -94,11 +92,8 @@ public class Bitmap {
 		
 		// get extension
 		String extension = null;
-		Pattern p = Pattern.compile(".+\\.([^\\.]+)");
-		Matcher m = p.matcher(fSourceHref);
-		if (m.matches() && m.groupCount() == 1) {
-			extension = m.group(1);
-		}
+		String[] rootSplit = fSourceHref.split("\\.");
+		if (rootSplit.length > 0) extension = rootSplit[rootSplit.length-1];
 		
 		// no extension found - no way to figure out how to convert
 		if (extension == null) return;
@@ -128,7 +123,7 @@ public class Bitmap {
 		}
 		catch (ParseException e) {
 			// failed to convert - no biggy, we continue
-			//System.out.println("Failed to convert .dat file '" + fBinaryHref + "': " + e.getMessage());
+			System.out.println("Failed to convert .dat file '" + fBinaryHref + "': " + e.getMessage());
 		}
 	}
 	
