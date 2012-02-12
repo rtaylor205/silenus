@@ -3,8 +3,6 @@ package com.silenistudios.silenus;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.Vector;
 
 import com.silenistudios.silenus.dom.*;
@@ -110,17 +108,21 @@ public class XFLDocument implements XFLLibrary{
 		String href = XMLUtility.getAttribute(node, "href");
 		
 		// the name is the href without the .xml at the back
-		String name = null;
+		/*String name = null;
 		Pattern p = Pattern.compile("(.+)\\.xml");
 		Matcher m = p.matcher(href);
 		if (m.matches() && m.groupCount() == 1) {
 			name = m.group(1);
 		}
-		else throw new ParseException("Invalid filename found for include: '" + href + "'");
+		else throw new ParseException("Invalid filename found for include: '" + href + "'");*/
 		
 		
 		// load the XML file
 		Node include = XMLUtility.parseXML(fRoot, "LIBRARY/" + href);
+		
+		// get name
+		String name = XMLUtility.getAttribute(include, "name", "");
+		if (name.equals("")) throw new ParseException("Invalid filename found for include: '" + href + "'");
 		
 		// add this item to the map
 		nameToNode.put(name, include);

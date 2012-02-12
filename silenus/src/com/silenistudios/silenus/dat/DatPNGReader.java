@@ -128,11 +128,6 @@ public class DatPNGReader implements DatReader {
 		
 		// save output stream
 		outStream.flush();
-		
-		
-		// now save this raw data as png
-		//saveAsPng();
-		// http://www.exampledepot.com/egs/javax.imageio/Graphic2File.html
 	}
 
 	static final String HEXES = "0123456789ABCDEF";
@@ -152,8 +147,20 @@ public class DatPNGReader implements DatReader {
 
 
 	// uncompressed
-	private void parseUncompressed() throws ParseException, ParseException {
-		// TODO
+	private void parseUncompressed() throws ParseException, ParseException, IOException {
+		
+		// buffer
+		byte[] buffer = new byte[BufferSize];
+		
+		// keep going until we reach the end of the file
+		int n = stream.read(buffer, 0, BufferSize);
+		while (n > 0) {
+			outStream.write(buffer, 0, n);
+			n = stream.read(buffer, 0, BufferSize);
+		}
+		
+		// save output stream
+		outStream.flush();
 	}
 
 }
