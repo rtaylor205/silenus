@@ -1,14 +1,11 @@
 package com.silenistudios.silenus;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Vector;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import com.silenistudios.silenus.dom.*;
 import com.silenistudios.silenus.xml.XMLUtility;
