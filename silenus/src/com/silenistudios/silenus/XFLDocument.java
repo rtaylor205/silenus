@@ -44,6 +44,9 @@ public class XFLDocument implements XFLLibrary{
 	// frame rate
 	int fFrameRate;
 	
+	// number of includes not yet loaded
+	int fNIncludesLeft;
+	
 	// create an XFL parser
 	public XFLDocument(XMLUtility XMLUtility) {
 		this.XMLUtility = XMLUtility;
@@ -62,7 +65,13 @@ public class XFLDocument implements XFLLibrary{
 		fRoot = directoryName;
 		
 		// read DOMDocument.xml, the root document
-		Node root = XMLUtility.parseXML(fRoot, "DOMDocument.xml");
+		Node rootNode = XMLUtility.parseXML(fRoot, "DOMDocument.xml");
+		loadDOMDocument(rootNode);
+	}
+	
+	
+	// load the DOM document
+	private void loadDOMDocument(Node root) throws ParseException {
 		
 		// width and height
 		fWidth = XMLUtility.getIntAttribute(root, "width");
@@ -102,20 +111,10 @@ public class XFLDocument implements XFLLibrary{
 	
 	
 	// load an include from a separate XML
-	private void loadInclude(Map<String, Node> nameToNode, Node node) throws ParseException {
+	private void loadInclude(final Map<String, Node> nameToNode, Node node) throws ParseException {
 		
 		// get the href
 		String href = XMLUtility.getAttribute(node, "href");
-		
-		// the name is the href without the .xml at the back
-		/*String name = null;
-		Pattern p = Pattern.compile("(.+)\\.xml");
-		Matcher m = p.matcher(href);
-		if (m.matches() && m.groupCount() == 1) {
-			name = m.group(1);
-		}
-		else throw new ParseException("Invalid filename found for include: '" + href + "'");*/
-		
 		
 		// load the XML file
 		Node include = XMLUtility.parseXML(fRoot, "LIBRARY/" + href);
