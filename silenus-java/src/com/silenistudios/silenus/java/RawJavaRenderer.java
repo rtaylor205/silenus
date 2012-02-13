@@ -16,14 +16,14 @@ import java.util.Vector;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+import com.silenistudios.silenus.RawDataRenderer;
 import com.silenistudios.silenus.XFLDocument;
 import com.silenistudios.silenus.dom.Bitmap;
-import com.silenistudios.silenus.dom.ColorManipulation;
 import com.silenistudios.silenus.dom.Timeline;
-import com.silenistudios.silenus.dom.TransformationMatrix;
 import com.silenistudios.silenus.raw.AnimationBitmapData;
 import com.silenistudios.silenus.raw.AnimationData;
-import com.silenistudios.silenus.raw.RawDataRenderer;
+import com.silenistudios.silenus.raw.ColorManipulation;
+import com.silenistudios.silenus.raw.TransformationMatrix;
 
 public class RawJavaRenderer extends JPanel {
 	
@@ -54,14 +54,14 @@ public class RawJavaRenderer extends JPanel {
 		fAnimation = renderer.getAnimationData();
 		
 		// load all images
-		Bitmap[] bitmaps = fAnimation.getBitmaps();
-		for (Bitmap bitmap : bitmaps) {
+		Vector<String> bitmaps = fAnimation.getBitmapPaths();
+		for (String bitmap : bitmaps) {
 			BufferedImage img;
 			try {
-				img = ImageIO.read(new File(bitmap.getAbsolutePath()));
-				fImages.put(bitmap.getAbsolutePath(), img);
+				img = ImageIO.read(new File(bitmap));
+				fImages.put(bitmap, img);
 			} catch (IOException e) {
-				System.out.println("Failed to load file: " + bitmap.getSourceHref());
+				System.out.println("Failed to load file: " + bitmap);
 			}
 		}
 		
@@ -100,10 +100,10 @@ public class RawJavaRenderer extends JPanel {
 			
 			// if there is color manipultion, we do it
 			if (bitmap.hasColorManipulation()) {
-				drawImage(bitmap.getBitmap(), bitmap.getColorManipulation());
+				drawImage(bitmap.getBitmapPath(), bitmap.getColorManipulation());
 			}
 			else {
-				drawImage(bitmap.getBitmap());
+				drawImage(bitmap.getBitmapPath());
 			}
 			
 			// invert back to original case
@@ -137,15 +137,15 @@ public class RawJavaRenderer extends JPanel {
 	}
 	
 	
-	public void drawImage(Bitmap bitmap) {
-		fSurface.drawImage(fImages.get(bitmap.getAbsolutePath()), new AffineTransform(1f,0f,0f,1f,0,0), null);
+	public void drawImage(String bitmapPath) {
+		fSurface.drawImage(fImages.get(bitmapPath), new AffineTransform(1f,0f,0f,1f,0,0), null);
 	}
 	
 	
-	public void drawImage(Bitmap bitmap, ColorManipulation c) {
+	public void drawImage(String bitmapPath, ColorManipulation c) {
 		
 		// get the original image
-		BufferedImage img = fImages.get(bitmap.getAbsolutePath());
+		BufferedImage img = fImages.get(bitmapPath);
 		
 		// set up the rescale operation
 		RescaleOp rescaleOp = new RescaleOp(new float[]{

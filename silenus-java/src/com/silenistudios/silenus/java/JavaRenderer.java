@@ -21,8 +21,8 @@ import com.silenistudios.silenus.RenderInterface;
 import com.silenistudios.silenus.SceneRenderer;
 import com.silenistudios.silenus.XFLDocument;
 import com.silenistudios.silenus.dom.Bitmap;
-import com.silenistudios.silenus.dom.ColorManipulation;
 import com.silenistudios.silenus.dom.Timeline;
+import com.silenistudios.silenus.raw.ColorManipulation;
 
 /**
  * Example renderer for Java. Implements the RenderInterface, allowing it to render
