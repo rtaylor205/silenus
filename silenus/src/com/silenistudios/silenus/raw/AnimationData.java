@@ -55,5 +55,11 @@ public class AnimationData implements Serializable {
 		assert(0 <= frameIndex && frameIndex < fFrames.length);
 		return fFrames[frameIndex].getBitmapData();
 	}
+	
+	
+	// get animation length
+	public int getAnimationLength() {
+		return fFrames.length;
+	}
 
 }
