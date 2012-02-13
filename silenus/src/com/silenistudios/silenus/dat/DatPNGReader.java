@@ -123,7 +123,6 @@ public class DatPNGReader implements DatReader {
 			
 			// next piece
 			length = stream.readShort();
-			
 		}
 		
 		// save output stream
