@@ -21,7 +21,7 @@ public class Main {
 	public static void main(String[] args) {
 		
 		// if no argument is provided, we show the default example
-		String directoryName = "example";
+		String directoryName = "example/example.fla";
 		if (args.length > 0) directoryName = args[0];
 		
 		// parse an XFL document and render it to screen
