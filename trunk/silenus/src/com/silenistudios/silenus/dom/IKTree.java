@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import com.silenistudios.silenus.raw.TransformationMatrix;
 import com.silenistudios.silenus.xml.Node;
 
 import com.silenistudios.silenus.ParseException;

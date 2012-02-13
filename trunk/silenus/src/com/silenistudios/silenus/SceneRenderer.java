@@ -5,13 +5,13 @@ import java.util.Stack;
 import java.util.Vector;
 
 import com.silenistudios.silenus.dom.BitmapInstance;
-import com.silenistudios.silenus.dom.ColorManipulation;
 import com.silenistudios.silenus.dom.Instance;
 import com.silenistudios.silenus.dom.Keyframe;
 import com.silenistudios.silenus.dom.Layer;
 import com.silenistudios.silenus.dom.SymbolInstance;
 import com.silenistudios.silenus.dom.Timeline;
-import com.silenistudios.silenus.dom.TransformationMatrix;
+import com.silenistudios.silenus.raw.ColorManipulation;
+import com.silenistudios.silenus.raw.TransformationMatrix;
 
 /**
  * A scene renderer will take a loaded scene from an XFLParser, and will

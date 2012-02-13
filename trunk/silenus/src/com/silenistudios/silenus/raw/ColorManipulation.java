@@ -1,4 +1,6 @@
-package com.silenistudios.silenus.dom;
+package com.silenistudios.silenus.raw;
+
+import java.io.Serializable;
 
 /**
  * This is a data structure that holds information about color manipulation that must be
@@ -7,8 +9,9 @@ package com.silenistudios.silenus.dom;
  * @author Karel
  *
  */
-public class ColorManipulation {
-	
+public class ColorManipulation implements Serializable {
+	private static final long serialVersionUID = 2714820886482014665L;
+
 	// alpha multiplier
 	double fAlphaMultiplier = 1.0;
 	

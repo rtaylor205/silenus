@@ -18,6 +18,6 @@
   <!-- Other module inherits                                      -->
 
   <!-- Specify the paths for translatable code                    -->
-  <source path=''/>
+  <source path='raw'/>
 
 </module>

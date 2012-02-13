@@ -1,10 +1,7 @@
 package com.silenistudios.silenus.raw;
 
 import java.io.Serializable;
-import java.util.Set;
 import java.util.Vector;
-
-import com.silenistudios.silenus.dom.Bitmap;
 
 /**
  * This data structure contains all points and locations for one animation (scene).
@@ -13,9 +10,10 @@ import com.silenistudios.silenus.dom.Bitmap;
  *
  */
 public class AnimationData implements Serializable {
-	
+	private static final long serialVersionUID = 2283183510219011650L;
+
 	// list of bitmaps used on this scene
-	Bitmap[] fBitmaps;
+	Vector<String> fBitmapPaths = new Vector<String>();
 	
 	// animation frames
 	AnimationFrameData[] fFrames;
@@ -31,16 +29,14 @@ public class AnimationData implements Serializable {
 	
 	
 	// set bitmaps
-	public void setBitmaps(Set<Bitmap> bitmaps) {
-		fBitmaps = new Bitmap[bitmaps.size()];
-		int i = 0;
-		for (Bitmap bitmap : bitmaps) fBitmaps[i++] = bitmap;
+	public void addBitmapPath(String bitmapPath) {
+		fBitmapPaths.add(bitmapPath);
 	}
 	
 	
-	// get bitmaps
-	public Bitmap[] getBitmaps() {
-		return fBitmaps;
+	// get bitmap paths
+	public Vector<String> getBitmapPaths() {
+		return fBitmapPaths;
 	}
 	
 	
