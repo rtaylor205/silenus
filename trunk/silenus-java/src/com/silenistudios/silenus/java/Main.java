@@ -34,7 +34,15 @@ public class Main {
 			
 			// draw document
 			System.out.println("Drawing document...");
-			openInJFrame(new JavaRenderer(xfl), xfl.getWidth(), xfl.getHeight(), "Silenus demo");
+			
+			/**
+			 * RawJavaRenderer will compute all the locations for the different bitmaps
+			 * once at the start and then just draws the different bitmaps at the computed locations
+			 * at real-time. This results in higher memory consumption, faster drawing.
+			 * 
+			 * Use the JavaRenderer for live animation and low memory footprint.
+			 */
+			openInJFrame(new RawJavaRenderer(xfl), xfl.getWidth(), xfl.getHeight(), "Silenus demo");
 		}
 		catch (ParseException e) {
 			System.out.println(e.getMessage());
