@@ -57,7 +57,7 @@ public class XFLDocument implements XFLLibrary{
 	int fNIncludesLeft;
 	
 	// the output stream factory
-	StreamFactory fStreamFactory = new FileOutputStreamFactory();
+	StreamFactory fStreamFactory = new DefaultStreamFactory();
 	
 	// create an XFL parser
 	public XFLDocument(XMLUtility XMLUtility) {
