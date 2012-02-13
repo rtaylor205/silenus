@@ -5,6 +5,7 @@ import java.io.Serializable;
 
 import com.silenistudios.silenus.xml.Node;
 
+import com.silenistudios.silenus.StreamFactory;
 import com.silenistudios.silenus.ParseException;
 import com.silenistudios.silenus.dat.*;
 import com.silenistudios.silenus.xml.XMLUtility;
@@ -35,7 +36,7 @@ public class Bitmap implements Serializable {
 	
 	
 	// read a bitmap from a node
-	public Bitmap(XMLUtility XMLUtility, String root, Node node) throws ParseException {
+	public Bitmap(XMLUtility XMLUtility, StreamFactory factory, String root, Node node) throws ParseException {
 		
 		// get name
 		fName = XMLUtility.getAttribute(node, "name");
@@ -55,7 +56,7 @@ public class Bitmap implements Serializable {
 		if (!new File(fSourceHref).exists()) {
 			
 			// file does not exist, try to convert to binary
-			convertBinary(root);
+			convertBinary(factory, root);
 		}
 	}
 	
@@ -91,7 +92,7 @@ public class Bitmap implements Serializable {
 	
 	
 	// convert the binary data back - for now only png is supported
-	private void convertBinary(String root) {
+	private void convertBinary(StreamFactory factory, String root) {
 		
 		// get extension
 		String extension = null;
@@ -103,12 +104,12 @@ public class Bitmap implements Serializable {
 		
 		// convert png
 		if (extension.equalsIgnoreCase("png")) {
-			convertBinary(new DatPNGReader(), root);
+			convertBinary(new DatPNGReader(factory), root);
 		}
 		
 		// convert jpeg
 		else if (extension.equalsIgnoreCase("jpeg") || extension.equalsIgnoreCase("jpg")) {
-			convertBinary(new DatJPEGReader(), root);
+			convertBinary(new DatJPEGReader(factory), root);
 		}
 	}
 	

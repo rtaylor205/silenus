@@ -3,10 +3,10 @@ package com.silenistudios.silenus;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -56,9 +56,18 @@ public class XFLDocument implements XFLLibrary{
 	// number of includes not yet loaded
 	int fNIncludesLeft;
 	
+	// the output stream factory
+	StreamFactory fStreamFactory = new FileOutputStreamFactory();
+	
 	// create an XFL parser
 	public XFLDocument(XMLUtility XMLUtility) {
 		this.XMLUtility = XMLUtility;
+	}
+	
+	
+	// set the stream factory
+	public void setStreamFactory(StreamFactory factory) {
+		fStreamFactory = factory;
 	}
 	
 	
@@ -107,7 +116,7 @@ public class XFLDocument implements XFLLibrary{
 		try {
 			System.out.println("Opening " + fileName);
 			// read zip file
-			FileInputStream fis = new FileInputStream(fileName);
+			InputStream fis = fStreamFactory.createInputStream(new File(fileName));
 			ZipInputStream zin = new ZipInputStream(new BufferedInputStream(fis));
 			
 			// get all entries in the zip file
@@ -120,7 +129,7 @@ public class XFLDocument implements XFLLibrary{
 				
 				// it's a directory - create it
 				if (entry.isDirectory()) {
-					new File(pathName, entry.getName()).mkdirs();
+					//new File(pathName, entry.getName()).mkdirs();
 				}
 				
 				// it's a file - extract & save the file
@@ -128,14 +137,14 @@ public class XFLDocument implements XFLLibrary{
 					
 					// create parent directory
 			        File outputFile = new File(pathName, entry.getName());
-			        if (!outputFile.getParentFile().exists()) {
+			        /*if (!outputFile.getParentFile().exists()) {
 			            outputFile.getParentFile().mkdirs();
-			        }
+			        }*/
 			        
 			        // extract & save the file
-					FileOutputStream fos = new FileOutputStream(pathName + entry.getName());
+					OutputStream fos = fStreamFactory.createOutputStream(outputFile);
 					BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER);
-					int count = -1;
+					int count;
 					while ((count = zin.read(data, 0, BUFFER)) != -1) {
 						dest.write(data, 0, count);
 					}
@@ -168,7 +177,7 @@ public class XFLDocument implements XFLLibrary{
 		Node media = XMLUtility.findNode(root,  "media");
 		Vector<Node> bitmaps = XMLUtility.findNodes(media, "DOMBitmapItem");
 		for (Node node : bitmaps) {
-			Bitmap bitmap = new Bitmap(XMLUtility, fRoot, node);
+			Bitmap bitmap = new Bitmap(XMLUtility, fStreamFactory, fRoot, node);
 			fBitmaps.put(bitmap.getName(), bitmap);
 		}
 		
