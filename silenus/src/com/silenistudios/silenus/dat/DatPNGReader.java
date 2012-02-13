@@ -1,9 +1,10 @@
 package com.silenistudios.silenus.dat;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
+import com.silenistudios.silenus.StreamFactory;
 import com.silenistudios.silenus.ParseException;
 
 import java.io.OutputStream;
@@ -31,9 +32,13 @@ public class DatPNGReader implements DatReader {
 	// buffer size
 	static final int BufferSize = 512;
 	
+	// output stream factory
+	StreamFactory fStreamFactory;
+	
 	
 	// constructor
-	public DatPNGReader() {
+	public DatPNGReader(StreamFactory factory) {
+		fStreamFactory = factory;
 	}
 	
 	// read a dat file and produce a png
@@ -41,8 +46,9 @@ public class DatPNGReader implements DatReader {
 	public void parse(String inputFileName, String outputFileName) throws ParseException {
 		
 		try {
+			
 			// file
-			FileInputStream file = new FileInputStream(inputFileName);
+			InputStream file = fStreamFactory.createInputStream(new File(inputFileName));
 			
 			// pass to data input stream
 			stream = new LittleEndianDataInputStream(file);
@@ -61,7 +67,7 @@ public class DatPNGReader implements DatReader {
 			fHeight = stream.readShort(); // 6
 			
 			// output png file
-			outStream = new PNGOutputStream(new File(outputFileName), fWidth, fHeight);
+			outStream = new PNGOutputStream(fStreamFactory.createOutputStream(new File(outputFileName)), fWidth, fHeight);
 			
 			// skip some empty bytes
 			stream.skipBytes(4); // 8

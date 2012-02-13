@@ -37,15 +37,15 @@ public class PNGOutputStream extends OutputStream {
 	// data
 	byte fRed, fGreen, fBlue, fAlpha;
 	
-	// filename
-	File fFile;
+	// output stream
+	OutputStream fOut;
 	
 	
 	// constructor
-	public PNGOutputStream(File file, int width, int height) {
+	public PNGOutputStream(OutputStream out, int width, int height) {
 		fWidth = width;
 		fHeight = height;
-		fFile = file;
+		fOut = out;
 		fImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR_PRE);
 		fPixelArray = ((DataBufferByte)fImage.getRaster().getDataBuffer()).getData();
 	}
@@ -98,15 +98,14 @@ public class PNGOutputStream extends OutputStream {
 	@Override
 	public void flush() throws IOException {
 		super.flush();
-		fFile.mkdirs();
-		ImageIO.write(fImage, "png", fFile);
+		ImageIO.write(fImage, "png", fOut);
 	}
 	
 	
 	@Override
 	public void close() throws IOException {
 		super.flush();
-		ImageIO.write(fImage, "png", fFile);
+		ImageIO.write(fImage, "png", fOut);
 		fImage = null;
 	}
 
