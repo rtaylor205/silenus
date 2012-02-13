@@ -1,5 +1,6 @@
 package com.silenistudios.silenus.raw;
 
+import java.io.Serializable;
 import java.util.Vector;
 
 /**
@@ -7,7 +8,8 @@ import java.util.Vector;
  * @author Karel
  *
  */
-public class AnimationFrameData {
+public class AnimationFrameData implements Serializable {
+	private static final long serialVersionUID = -7111305910456988265L;
 	
 	// list of bitmaps drawn in this frame
 	Vector<AnimationBitmapData> fBitmaps = new Vector<AnimationBitmapData>();

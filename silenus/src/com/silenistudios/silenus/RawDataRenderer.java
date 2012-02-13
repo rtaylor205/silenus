@@ -1,13 +1,15 @@
-package com.silenistudios.silenus.raw;
+package com.silenistudios.silenus;
 
+import java.util.Set;
 import java.util.Vector;
 
-import com.silenistudios.silenus.RenderInterface;
-import com.silenistudios.silenus.SceneRenderer;
 import com.silenistudios.silenus.dom.Bitmap;
-import com.silenistudios.silenus.dom.ColorManipulation;
 import com.silenistudios.silenus.dom.Timeline;
-import com.silenistudios.silenus.dom.TransformationMatrix;
+import com.silenistudios.silenus.raw.AnimationBitmapData;
+import com.silenistudios.silenus.raw.AnimationData;
+import com.silenistudios.silenus.raw.AnimationFrameData;
+import com.silenistudios.silenus.raw.ColorManipulation;
+import com.silenistudios.silenus.raw.TransformationMatrix;
 
 /**
  * This class will not render the animation to any video output, but will instead
@@ -46,7 +48,8 @@ public class RawDataRenderer implements RenderInterface {
 		fData = new AnimationData(scene.getAnimationLength());
 		
 		// set bitmaps used
-		fData.setBitmaps(scene.getUsedImages());
+		Set<Bitmap> bitmaps = scene.getUsedImages();
+		for (Bitmap bitmap : bitmaps) fData.addBitmapPath(bitmap.getAbsolutePath());
 		
 		// create scene renderer
 		SceneRenderer renderer = new SceneRenderer(scene, this);
@@ -94,7 +97,7 @@ public class RawDataRenderer implements RenderInterface {
 
 	@Override
 	public void drawImage(Bitmap img) {
-		fBitmapData = new AnimationBitmapData(img, fTransformationMatrix);
+		fBitmapData = new AnimationBitmapData(img.getAbsolutePath(), fTransformationMatrix);
 		fFrame.addBitmapData(fBitmapData);
 	}
 	

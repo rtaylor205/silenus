@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Vector;
 
 import com.silenistudios.silenus.ParseException;
+import com.silenistudios.silenus.raw.ColorManipulation;
+import com.silenistudios.silenus.raw.TransformationMatrix;
 import com.silenistudios.silenus.xml.XMLUtility;
 
 import com.silenistudios.silenus.xml.Node;

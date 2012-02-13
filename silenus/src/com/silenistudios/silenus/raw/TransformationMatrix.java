@@ -1,4 +1,4 @@
-package com.silenistudios.silenus.dom;
+package com.silenistudios.silenus.raw;
 
 import java.io.Serializable;
 
@@ -17,7 +17,8 @@ import com.silenistudios.silenus.xml.XMLUtility;
  *
  */
 public class TransformationMatrix implements Serializable {
-	
+	private static final long serialVersionUID = -8782592959755072441L;
+
 	// the scale/rotation matrix (a,b,c,d)
 	double[][] fMatrix = new double[2][2];
 	

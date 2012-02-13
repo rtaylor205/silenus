@@ -1,7 +1,7 @@
 package com.silenistudios.silenus;
 
 import com.silenistudios.silenus.dom.Bitmap;
-import com.silenistudios.silenus.dom.ColorManipulation;
+import com.silenistudios.silenus.raw.ColorManipulation;
 
 /**
  * This interface must be implemented to render a scene through the SceneRenderer.

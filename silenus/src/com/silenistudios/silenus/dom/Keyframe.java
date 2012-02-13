@@ -2,6 +2,7 @@ package com.silenistudios.silenus.dom;
 
 import com.silenistudios.silenus.ParseException;
 import com.silenistudios.silenus.XFLLibrary;
+import com.silenistudios.silenus.raw.TransformationMatrix;
 import com.silenistudios.silenus.xml.XMLUtility;
 
 import java.util.Collection;

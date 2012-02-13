@@ -2,6 +2,7 @@ package com.silenistudios.silenus.dom;
 
 import java.util.Vector;
 
+import com.silenistudios.silenus.raw.TransformationMatrix;
 import com.silenistudios.silenus.xml.Node;
 
 import com.silenistudios.silenus.ParseException;
