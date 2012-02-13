@@ -46,10 +46,7 @@ public class RawDataRenderer implements RenderInterface {
 		
 		// create animation data
 		fData = new AnimationData(scene.getAnimationLength());
-		
-		// set bitmaps used
-		Set<Bitmap> bitmaps = scene.getUsedImages();
-		for (Bitmap bitmap : bitmaps) fData.addBitmapPath(bitmap.getAbsolutePath());
+		fData.setBitmaps(scene.getUsedImages());
 		
 		// create scene renderer
 		SceneRenderer renderer = new SceneRenderer(scene, this);
@@ -97,7 +94,7 @@ public class RawDataRenderer implements RenderInterface {
 
 	@Override
 	public void drawImage(Bitmap img) {
-		fBitmapData = new AnimationBitmapData(img.getAbsolutePath(), fTransformationMatrix);
+		fBitmapData = new AnimationBitmapData(img, fTransformationMatrix);
 		fFrame.addBitmapData(fBitmapData);
 	}
 	
