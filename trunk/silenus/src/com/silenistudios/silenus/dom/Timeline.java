@@ -63,7 +63,7 @@ public class Timeline {
 	
 	// get animation length
 	public int getAnimationLength() {
-		return fMaxFrameIndex;
+		return fMaxFrameIndex+1;
 	}
 	
 	

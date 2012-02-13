@@ -1,6 +1,8 @@
 package com.silenistudios.silenus.dom;
 
 import java.io.File;
+import java.io.Serializable;
+
 import com.silenistudios.silenus.xml.Node;
 
 import com.silenistudios.silenus.ParseException;
@@ -14,7 +16,7 @@ import com.silenistudios.silenus.xml.XMLUtility;
  * @author Karel
  *
  */
-public class Bitmap {
+public class Bitmap implements Serializable {
 	
 	// name of the bitmap
 	private String fName;

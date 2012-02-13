@@ -1,5 +1,7 @@
 package com.silenistudios.silenus.dom;
 
+import java.io.Serializable;
+
 import com.silenistudios.silenus.xml.Node;
 
 import com.silenistudios.silenus.ParseException;
@@ -14,7 +16,7 @@ import com.silenistudios.silenus.xml.XMLUtility;
  * @author Karel
  *
  */
-public class TransformationMatrix {
+public class TransformationMatrix implements Serializable {
 	
 	// the scale/rotation matrix (a,b,c,d)
 	double[][] fMatrix = new double[2][2];
@@ -52,7 +54,10 @@ public class TransformationMatrix {
 	
 	// create a transformation matrix
 	public TransformationMatrix(double[][] matrix, double translateX, double translateY) {
-		fMatrix = matrix;
+		fMatrix[0][0] = matrix[0][0];
+		fMatrix[0][1] = matrix[0][1];
+		fMatrix[1][0] = matrix[1][0];
+		fMatrix[1][1] = matrix[1][1];
 		fTranslateX = translateX;
 		fTranslateY = translateY;
 	}
@@ -124,14 +129,14 @@ public class TransformationMatrix {
 	
 	
 	// add two matrices
-	public static TransformationMatrix compose(TransformationMatrix A, TransformationMatrix B) {
+	public static TransformationMatrix compose(TransformationMatrix B, TransformationMatrix A) {
 		TransformationMatrix C = new TransformationMatrix();
 		C.fMatrix[0][0] = B.fMatrix[0][0] * A.fMatrix[0][0] + B.fMatrix[0][1] * A.fMatrix[1][0];
 		C.fMatrix[0][1] = B.fMatrix[0][0] * A.fMatrix[0][1] + B.fMatrix[0][1] * A.fMatrix[1][1];
 		C.fMatrix[1][0] = B.fMatrix[1][0] * A.fMatrix[0][0] + B.fMatrix[1][1] * A.fMatrix[1][0];
 		C.fMatrix[1][1] = B.fMatrix[1][0] * A.fMatrix[0][1] + B.fMatrix[1][1] * A.fMatrix[1][1];
-		C.fTranslateX = A.fTranslateX + B.fTranslateX;
-		C.fTranslateY = A.fTranslateY + B.fTranslateY;
+		C.fTranslateX = B.fMatrix[0][0] * A.fTranslateX + B.fMatrix[0][1] * A.fTranslateY + B.fTranslateX;
+		C.fTranslateY = B.fMatrix[1][0] * A.fTranslateX + B.fMatrix[1][1] * A.fTranslateY + B.fTranslateY;
 		return C;
 	}
 	

@@ -34,9 +34,6 @@ public interface RenderInterface {
 	// path is relative to the root of the xfl directory (where DOMDocument.xml resides)
 	public void drawImage(Bitmap img);
 	
-	// rect
-	public void drawRectangle(double x1, double y1, double x2, double y2);
-	
 	// draw the provided image to the screen, so that the topleft of the image is in the current origin
 	// path is relative to the root of the xfl directory (where DOMDocument.xml resides)
 	// Before drawing the image, the data contained in ColorManipulation must be applied to the entire
