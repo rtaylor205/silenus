@@ -2,82 +2,69 @@ package com.silenistudios.silenus.java;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Composite;
-import java.awt.geom.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Vector;
+
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
-import com.silenistudios.silenus.RenderInterface;
-import com.silenistudios.silenus.SceneRenderer;
 import com.silenistudios.silenus.XFLDocument;
 import com.silenistudios.silenus.dom.Bitmap;
 import com.silenistudios.silenus.dom.ColorManipulation;
 import com.silenistudios.silenus.dom.Timeline;
+import com.silenistudios.silenus.dom.TransformationMatrix;
+import com.silenistudios.silenus.raw.AnimationBitmapData;
+import com.silenistudios.silenus.raw.AnimationData;
+import com.silenistudios.silenus.raw.RawDataRenderer;
 
-/**
- * Example renderer for Java. Implements the RenderInterface, allowing it to render
- * any scene sent to it.
- * @author Karel
- *
- */
-public class JavaRenderer extends JPanel implements RenderInterface {
+public class RawJavaRenderer extends JPanel {
 	
 	// default serial number
 	private static final long serialVersionUID = 1L;
-
-	// the renderer
-	SceneRenderer fRenderer;
 	
-	// the drawing context
-	Graphics2D fSurface;
-	
-	// stack of transformations
-	Stack<AffineTransform> fTransformStack = new Stack<AffineTransform>();
-	
-	// stack of composite operations, for restoration on restore()
-	Stack<Composite> fCompositeStack = new Stack<Composite>();
-	
-	// current frame
-	int fFrame = 0;
+	// animation data
+	AnimationData fAnimation;
 	
 	// images
 	Map<String, BufferedImage> fImages = new HashMap<String, BufferedImage>();
 	
-	// the scene
-	Timeline fScene;
+	// current frame
+	int fFrame = 0;
+	
+	// surface
+	Graphics2D fSurface;
 	
 	
 	// constructor
-	public JavaRenderer(XFLDocument doc) {
+	public RawJavaRenderer(XFLDocument doc) {
 		
 		// get the scene
-		fScene = doc.getScene();
+		final Timeline scene = doc.getScene();
 		
-		// set the renderer
-		fRenderer = new SceneRenderer(fScene, this);
+		// pre-compute all the transformations once using the raw data renderer
+		RawDataRenderer renderer = new RawDataRenderer(scene);
+		fAnimation = renderer.getAnimationData();
 		
 		// load all images
-		Set<Bitmap> bitmaps = fScene.getUsedImages();
+		Bitmap[] bitmaps = fAnimation.getBitmaps();
 		for (Bitmap bitmap : bitmaps) {
 			BufferedImage img;
 			try {
 				img = ImageIO.read(new File(bitmap.getAbsolutePath()));
 				fImages.put(bitmap.getAbsolutePath(), img);
 			} catch (IOException e) {
-				System.out.println("Failed to load file: " + bitmap.getAbsolutePath());
+				System.out.println("Failed to load file: " + bitmap.getSourceHref());
 			}
 		}
-
+		
 		// get frame rate
 		int frameRate = doc.getFrameRate();
 		
@@ -88,7 +75,7 @@ public class JavaRenderer extends JPanel implements RenderInterface {
 			@Override
 			public void run() {
 				repaint();
-				++fFrame;
+				fFrame = (fFrame + 1) % scene.getAnimationLength();
 			}
 			
 		}, 0, 1000 / frameRate);
@@ -100,8 +87,31 @@ public class JavaRenderer extends JPanel implements RenderInterface {
 	public void paintComponent(Graphics g) {
 		clear(g);
 		fSurface = (Graphics2D)g;
-		fRenderer.render(fFrame % (fScene.getMaxFrameIndex()+1));
-		//fRenderer.render(0);
+		
+		// get the current frame
+		Vector<AnimationBitmapData> bitmaps = fAnimation.getFrameData(fFrame);
+		for (AnimationBitmapData bitmap : bitmaps) {
+			
+			// perform the correct transformation
+			TransformationMatrix m = bitmap.getTransformationMatrix();
+			translate(m.getTranslateX(), m.getTranslateY());
+			scale(m.getScaleX(), m.getScaleY());
+			rotate(m.getRotation());
+			
+			// if there is color manipultion, we do it
+			if (bitmap.hasColorManipulation()) {
+				drawImage(bitmap.getBitmap(), bitmap.getColorManipulation());
+			}
+			else {
+				drawImage(bitmap.getBitmap());
+			}
+			
+			// invert back to original case
+			rotate(-m.getRotation());
+			scale(1.0 / m.getScaleX(), 1.0 / m.getScaleY());
+			translate(-m.getTranslateX(), -m.getTranslateY());
+		}
+		
 	}
 
 	// super.paintComponent clears offscreen pixmap,
@@ -110,47 +120,28 @@ public class JavaRenderer extends JPanel implements RenderInterface {
 	protected void clear(Graphics g) {
 		super.paintComponent(g);
 	}
-
-
-	@Override
-	public void save() {
-		fTransformStack.push(fSurface.getTransform());
-		fCompositeStack.push(fSurface.getComposite());
-	}
-
-
-	@Override
-	public void restore() {
-		fSurface.setTransform(fTransformStack.pop());
-		fSurface.setComposite(fCompositeStack.pop());
-	}
-
-
-	@Override
+	
+	
 	public void scale(double x, double y) {
 		fSurface.scale(x,  y);
 	}
-
-
-	@Override
+	
+	
 	public void translate(double x, double y) {
 		fSurface.translate(x,  y);
 	}
-
-
-	@Override
+	
+	
 	public void rotate(double theta) {
 		fSurface.rotate(theta);
 	}
-
-
-	@Override
+	
+	
 	public void drawImage(Bitmap bitmap) {
 		fSurface.drawImage(fImages.get(bitmap.getAbsolutePath()), new AffineTransform(1f,0f,0f,1f,0,0), null);
 	}
 	
 	
-	@Override
 	public void drawImage(Bitmap bitmap, ColorManipulation c) {
 		
 		// get the original image
