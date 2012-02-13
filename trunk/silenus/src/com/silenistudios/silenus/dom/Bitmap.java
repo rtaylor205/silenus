@@ -41,7 +41,8 @@ public class Bitmap implements Serializable {
 		fName = XMLUtility.getAttribute(node, "name");
 		
 		// get external path
-		fExternalFilePath = XMLUtility.getAttribute(node, "sourceExternalFilepath");
+		// is not set when we're dealing with an extracted .fla file
+		fExternalFilePath = XMLUtility.getAttribute(node, "sourceExternalFilepath", "");
 		
 		// get hrefs
 		fSourceHref = XMLUtility.getAttribute(node, "href");
