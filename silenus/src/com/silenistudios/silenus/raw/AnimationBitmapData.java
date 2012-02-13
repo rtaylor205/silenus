@@ -2,6 +2,8 @@ package com.silenistudios.silenus.raw;
 
 import java.io.Serializable;
 
+import com.silenistudios.silenus.dom.Bitmap;
+
 
 /**
  * This class contains all information about one particular bitmap on one frame of an animation
@@ -12,7 +14,7 @@ public class AnimationBitmapData implements Serializable {
 	private static final long serialVersionUID = 4750362074054547165L;
 
 	// path to the bitmap
-	String fBitmapPath;
+	Bitmap fBitmap;
 	
 	// the transformation matrix
 	TransformationMatrix fTransformationMatrix;
@@ -22,10 +24,10 @@ public class AnimationBitmapData implements Serializable {
 	
 	
 	// constructor
-	public AnimationBitmapData(String bitmapPath, TransformationMatrix matrix) {
+	public AnimationBitmapData(Bitmap bitmap, TransformationMatrix matrix) {
 		
 		// set the bitmap
-		fBitmapPath = bitmapPath;
+		fBitmap = bitmap;
 		
 		// we copy the transformation matrix because it will be further manipulated later
 		fTransformationMatrix = new TransformationMatrix(matrix.getMatrix(), matrix.getTranslateX(), matrix.getTranslateY());
@@ -39,8 +41,8 @@ public class AnimationBitmapData implements Serializable {
 	
 	
 	// get source href
-	public String getBitmapPath() {
-		return fBitmapPath;
+	public Bitmap getBitmap() {
+		return fBitmap;
 	}
 	
 	
