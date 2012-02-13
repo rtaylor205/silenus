@@ -1,9 +1,18 @@
 package com.silenistudios.silenus;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import com.silenistudios.silenus.dom.*;
 import com.silenistudios.silenus.xml.XMLUtility;
@@ -53,20 +62,95 @@ public class XFLDocument implements XFLLibrary{
 	}
 	
 	
-	// parse an XFL directory
-	public void parseXFL(String directoryName) throws ParseException {
+	// parse an XFL directory or CS5 .FLA file
+	// must be passed either the directory name (with no file at the end) or the entire path to the .FLA file, including the filename
+	public void parseXFL(String pathName) throws ParseException {
 		
 		// strip "/" from the path at the end if necessary
-		if (directoryName.charAt(directoryName.length()-1) == '/') {
-			directoryName = directoryName.substring(0, directoryName.length()-2);
+		if (pathName.charAt(pathName.length()-1) == '/') {
+			pathName = pathName.substring(0, pathName.length()-2);
+		}
+		
+		// see if the directory ends with .fla
+		String[] splitPathName = pathName.split("\\.");
+		if (splitPathName.length > 1) {
+			
+			// this is an FLA file - unzip it first, then parse it
+			if (splitPathName[splitPathName.length-1].equalsIgnoreCase("fla")) {
+				
+				// update path name to remove the filename
+				splitPathName = pathName.split("[\\/]+");
+				StringBuilder ss = new StringBuilder();
+				for (int i = 0; i < splitPathName.length-1; ++i) {
+					ss.append(splitPathName[i]).append("/");
+				}
+				
+				// unzip
+				unzipFLA(pathName, ss.toString());
+				
+				// update path name
+				pathName = ss.toString();
+			}
 		}
 		
 		// root dir
-		fRoot = directoryName;
+		fRoot = pathName;
 		
 		// read DOMDocument.xml, the root document
 		Node rootNode = XMLUtility.parseXML(fRoot, "DOMDocument.xml");
 		loadDOMDocument(rootNode);
+	}
+	
+	
+	// unzip an FLA fipe
+	private void unzipFLA(String fileName, String pathName) throws ParseException {
+		try {
+			System.out.println("Opening " + fileName);
+			// read zip file
+			FileInputStream fis = new FileInputStream(fileName);
+			ZipInputStream zin = new ZipInputStream(new BufferedInputStream(fis));
+			
+			// get all entries in the zip file
+			ZipEntry entry;
+			while ((entry = zin.getNextEntry()) != null) {
+				
+				// set up a buffer
+				int BUFFER = 2048;
+				byte data[] = new byte[BUFFER];
+				
+				// it's a directory - create it
+				if (entry.isDirectory()) {
+					new File(pathName, entry.getName()).mkdirs();
+				}
+				
+				// it's a file - extract & save the file
+				else {
+					
+					// create parent directory
+			        File outputFile = new File(pathName, entry.getName());
+			        if (!outputFile.getParentFile().exists()) {
+			            outputFile.getParentFile().mkdirs();
+			        }
+			        
+			        // extract & save the file
+					FileOutputStream fos = new FileOutputStream(pathName + entry.getName());
+					BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER);
+					int count = -1;
+					while ((count = zin.read(data, 0, BUFFER)) != -1) {
+						dest.write(data, 0, count);
+					}
+					dest.flush();
+					dest.close();
+				}
+			}
+			zin.close();
+		}
+		catch (FileNotFoundException e) {
+			throw new ParseException("File not found: '" + fileName + "'", e);
+		}
+		catch (IOException e) {
+			throw new ParseException("Failed to read FLA (zip) file '" + fileName + "': " + e.getMessage(), e);
+		}
 	}
 	
 	
