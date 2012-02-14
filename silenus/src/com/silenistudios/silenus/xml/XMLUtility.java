@@ -1,6 +1,7 @@
 package com.silenistudios.silenus.xml;
 
 import com.silenistudios.silenus.ParseException;
+import com.silenistudios.silenus.StreamFactory;
 
 import java.util.Vector;
 
@@ -15,7 +16,7 @@ import com.silenistudios.silenus.xml.Node;
 public interface XMLUtility {
 	
 	// parse a document and return the root node (typically the first child of the Document obtained!)
-	public Node parseXML(String root, String fileName) throws ParseException;
+	public Node parseXML(StreamFactory streamFactory, String root, String fileName) throws ParseException;
 	
 	// get the first element with a given tag
 	public Node findNode(Node root, String nodeName) throws ParseException;

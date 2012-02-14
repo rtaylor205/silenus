@@ -17,6 +17,7 @@ import java.util.zip.ZipInputStream;
 import com.silenistudios.silenus.dom.*;
 import com.silenistudios.silenus.xml.XMLUtility;
 import com.silenistudios.silenus.xml.Node;
+import com.silenistudios.silenus.xml.java.JavaXMLUtility;
 
 /**
  * This class will parse an entire XFL scene and generate keyframe data for all objects.
@@ -33,7 +34,7 @@ public class XFLDocument implements XFLLibrary{
 	RenderInterface fRenderer;
 	
 	// XML Utility
-	XMLUtility XMLUtility;
+	XMLUtility XMLUtility = new JavaXMLUtility();
 	
 	// map of all bitmaps
 	Map<String, Bitmap> fBitmaps = new HashMap<String, Bitmap>();
@@ -60,14 +61,19 @@ public class XFLDocument implements XFLLibrary{
 	StreamFactory fStreamFactory = new DefaultStreamFactory();
 	
 	// create an XFL parser
-	public XFLDocument(XMLUtility XMLUtility) {
-		this.XMLUtility = XMLUtility;
+	public XFLDocument() {
 	}
 	
 	
 	// set the stream factory
 	public void setStreamFactory(StreamFactory factory) {
 		fStreamFactory = factory;
+	}
+	
+	
+	// set XML utility
+	public void setXMLUtility(XMLUtility XMLUtility) {
+		this.XMLUtility = XMLUtility;
 	}
 	
 	
@@ -106,7 +112,7 @@ public class XFLDocument implements XFLLibrary{
 		fRoot = pathName;
 		
 		// read DOMDocument.xml, the root document
-		Node rootNode = XMLUtility.parseXML(fRoot, "DOMDocument.xml");
+		Node rootNode = XMLUtility.parseXML(fStreamFactory, fRoot, "DOMDocument.xml");
 		loadDOMDocument(rootNode);
 	}
 	
@@ -137,9 +143,6 @@ public class XFLDocument implements XFLLibrary{
 					
 					// create parent directory
 			        File outputFile = new File(pathName, entry.getName());
-			        /*if (!outputFile.getParentFile().exists()) {
-			            outputFile.getParentFile().mkdirs();
-			        }*/
 			        
 			        // extract & save the file
 					OutputStream fos = fStreamFactory.createOutputStream(outputFile);
@@ -158,7 +161,7 @@ public class XFLDocument implements XFLLibrary{
 			throw new ParseException("File not found: '" + fileName + "'", e);
 		}
 		catch (IOException e) {
-			throw new ParseException("Failed to read FLA (zip) file '" + fileName + "': " + e.getMessage(), e);
+			throw new ParseException("Failed to read FLA (zip) file '" + fileName + "'. Perhaps you are uploading a CS4 or older FLA file?", e);
 		}
 	}
 	
@@ -210,7 +213,7 @@ public class XFLDocument implements XFLLibrary{
 		String href = XMLUtility.getAttribute(node, "href");
 		
 		// load the XML file
-		Node include = XMLUtility.parseXML(fRoot, "LIBRARY/" + href);
+		Node include = XMLUtility.parseXML(fStreamFactory, fRoot, "LIBRARY/" + href);
 		
 		// get name
 		String name = XMLUtility.getAttribute(include, "name", "");

@@ -24,4 +24,9 @@ public class DefaultStreamFactory implements StreamFactory {
 		return new FileInputStream(file);
 	}
 
+	@Override
+	public boolean exists(File file) {
+		return file.exists();
+	}
+
 }

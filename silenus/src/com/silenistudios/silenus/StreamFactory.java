@@ -18,4 +18,7 @@ public interface StreamFactory {
 	
 	// create input stream
 	public InputStream createInputStream(File file) throws IOException;
+	
+	// see if a file exists
+	public boolean exists(File file);
 }

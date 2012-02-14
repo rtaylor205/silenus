@@ -30,4 +30,23 @@ public class AnimationFrameData implements Serializable {
 	public Vector<AnimationBitmapData> getBitmapData() {
 		return fBitmaps;
 	}
+	
+	
+	// get json
+	public String getJSON() {
+		StringBuilder ss = new StringBuilder();
+		ss.append("[");
+		for (int i = 0; i < fBitmaps.size(); ++i) {
+			if (i != 0) ss.append(",");
+			ss.append("{");
+			TransformationMatrix m = fBitmaps.get(i).getTransformationMatrix();
+			ss.append("\"translate\":[").append(m.getTranslateX()).append(",").append(m.getTranslateY()).append("],");
+			ss.append("\"scale\":[").append(m.getScaleX()).append(",").append(m.getScaleY()).append("],");
+			ss.append("\"rotation\":").append(m.getRotation()).append(",");
+			ss.append("\"bitmap\":\"").append(fBitmaps.get(i).getBitmap().getSourceHref()).append("\"");
+			ss.append("}");
+		}
+		ss.append("]");
+		return ss.toString();
+	}
 }

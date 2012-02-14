@@ -42,10 +42,10 @@ public class RawDataRenderer implements RenderInterface {
 	
 	
 	// render all data for a scene
-	public RawDataRenderer(Timeline scene) {
+	public RawDataRenderer(Timeline scene, int width, int height, int frameRate) {
 		
 		// create animation data
-		fData = new AnimationData(scene.getAnimationLength());
+		fData = new AnimationData(scene.getAnimationLength(), width, height, frameRate);
 		fData.setBitmaps(scene.getUsedImages());
 		
 		// create scene renderer
