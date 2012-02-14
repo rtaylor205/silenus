@@ -52,11 +52,14 @@ public class Bitmap implements Serializable {
 		// set root
 		fRoot = root;
 		
+		// if the file already exists, don't re-write if
+		String outputFileName = root + "/LIBRARY/" + fSourceHref;
+		
 		// see if the source file exists
-		if (!new File(fSourceHref).exists()) {
+		if (!factory.exists(new File(outputFileName))) {
 			
 			// file does not exist, try to convert to binary
-			convertBinary(factory, root);
+			convertBinary(factory, outputFileName);
 		}
 	}
 	
@@ -92,7 +95,7 @@ public class Bitmap implements Serializable {
 	
 	
 	// convert the binary data back - for now only png is supported
-	private void convertBinary(StreamFactory factory, String root) {
+	private void convertBinary(StreamFactory factory, String outputFileName) {
 		
 		// get extension
 		String extension = null;
@@ -104,26 +107,22 @@ public class Bitmap implements Serializable {
 		
 		// convert png
 		if (extension.equalsIgnoreCase("png")) {
-			convertBinary(new DatPNGReader(factory), root);
+			convertBinary(new DatPNGReader(factory), outputFileName);
 		}
 		
 		// convert jpeg
 		else if (extension.equalsIgnoreCase("jpeg") || extension.equalsIgnoreCase("jpg")) {
-			convertBinary(new DatJPEGReader(factory), root);
+			convertBinary(new DatJPEGReader(factory), outputFileName);
 		}
 	}
 	
 	
 	// convert binary png
-	private void convertBinary(DatReader reader, String root) {
-		
-		// if the file already exists, don't re-write if
-		String outputFileName = root + "/LIBRARY/" + fSourceHref;
-		if (new File(outputFileName).exists()) return;
+	private void convertBinary(DatReader reader, String outputFileName) {
 		
 		// it doesn't exist, try to make it
 		try {
-			reader.parse(root + "/bin/" + fBinaryHref, outputFileName);
+			reader.parse(fRoot + "/bin/" + fBinaryHref, outputFileName);
 		}
 		catch (ParseException e) {
 			// failed to convert - no biggy, we continue

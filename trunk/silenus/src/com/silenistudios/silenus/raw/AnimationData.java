@@ -24,9 +24,21 @@ public class AnimationData implements Serializable {
 	// length of the animation
 	int fAnimationLength;
 	
+	// width of the animation
+	int fWidth;
+	
+	// height
+	int fHeight;
+	
+	// frame rate
+	int fFrameRate;
+	
 	// constructor
-	public AnimationData(int animationLength) {
+	public AnimationData(int animationLength, int width, int height, int frameRate) {
 		fAnimationLength = animationLength;
+		fWidth = width;
+		fHeight = height;
+		fFrameRate = frameRate;
 		fFrames = new AnimationFrameData[fAnimationLength];
 	}
 	
@@ -61,5 +73,45 @@ public class AnimationData implements Serializable {
 	public int getAnimationLength() {
 		return fFrames.length;
 	}
-
+	
+	
+	// get FPS
+	public int getFrameRate() {
+		return fFrameRate;
+	}
+	
+	
+	// get width
+	public int getWidth() {
+		return fWidth;
+	}
+	
+	
+	// height
+	public int getHeight() {
+		return fHeight;
+	}
+	
+	
+	// export to json
+	public String getJSON() {
+		StringBuilder ss = new StringBuilder();
+		ss.append("{");
+		ss.append("\"frameRate\":").append(fFrameRate).append(",");
+		ss.append("\"width\":").append(fWidth).append(",");
+		ss.append("\"height\":").append(fHeight).append(",");
+		ss.append("\"bitmaps\":[");
+		for (int i = 0; i < fBitmaps.size(); ++i) {
+			if (i != 0) ss.append(",");
+			ss.append("\"").append(fBitmaps.get(i).getSourceHref()).append("\"");
+		}
+		ss.append("],");
+		ss.append("\"frames\":[");
+		for (int i = 0; i < fFrames.length; ++i) {
+			if (i != 0) ss.append(",");
+			ss.append(fFrames[i].getJSON());
+		}
+		ss.append("]}");
+		return ss.toString();
+	}
 }
