@@ -71,7 +71,6 @@ public class ImageServlet extends HttpServlet {
 			
 			// get the json
 			String json = silenus.getJSON(fileHash);
-			System.out.println(json);
 			res.setContentType("application/json");
 			PrintWriter w = new PrintWriter(res.getOutputStream());
 			w.write(json);

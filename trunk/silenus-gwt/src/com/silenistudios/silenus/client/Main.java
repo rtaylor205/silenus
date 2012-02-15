@@ -59,8 +59,6 @@ public class Main implements EntryPoint, MainCallback {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		System.out.println(GWT.getHostPageBaseURL());
-		System.out.println(GWT.getModuleBaseURL());
 		
 		// create a simple form
 		FlowPanel panel = new FlowPanel();
@@ -130,13 +128,27 @@ public class Main implements EntryPoint, MainCallback {
 		fAnimation = animation;
 		
 		// add JSON link
+		if (fPanel.getWidgetCount() == 4) fPanel.remove(fPanel.getWidgetCount()-1);
 		final TextBlock block = new TextBlock();
-		block.add("Download JSON", GWT.getModuleBaseURL() + "silenusImages?fileHash=" + fAnimation.fileHash, "_blank");
+		//block.add("Download JSON", GWT.getModuleBaseURL() + "silenusImages?fileHash=" + fAnimation.fileHash, "_blank");
+		block.add("Download JSON", new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				openJSONWindow(fAnimation.json);
+			}
+		});
 		fPanel.add(block);
 		
 		// prepare images
 		loadImages();
 	}
+	
+	
+	// open json window
+	private native void openJSONWindow(String s) /*-{
+		var dataUri	= "data:application/json;charset=utf-8,"+s;
+		window.open( dataUri, 'Silenus JSON');
+	}-*/;
 	
 
 	// load all images
@@ -206,6 +218,7 @@ public class Main implements EntryPoint, MainCallback {
 		fCanvas.setHeight(fAnimation.height + "px");
 		fCanvas.setCoordinateSpaceWidth(fAnimation.width);
 		fCanvas.setCoordinateSpaceHeight(fAnimation.height);
+		RootPanel.get("canvas").clear();
 		RootPanel.get("canvas").add(fCanvas);
 		
 		// set up a draw timer
