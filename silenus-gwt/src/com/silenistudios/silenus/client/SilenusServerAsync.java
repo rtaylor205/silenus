@@ -7,4 +7,6 @@ public interface SilenusServerAsync {
 	
 	void parseFLA(byte[] data, AsyncCallback<AnimationDTO> callback);
 
+	void cleanup(String fileHash, AsyncCallback<Void> callback);
+
 }
