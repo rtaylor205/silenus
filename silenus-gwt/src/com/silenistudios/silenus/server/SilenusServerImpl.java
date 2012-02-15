@@ -84,6 +84,12 @@ public class SilenusServerImpl extends RemoteServiceServlet implements SilenusSe
 	}
 	
 	
+	// get max file size
+	public int getMaxFileSize() {
+		if (fMaxFileSize == 0) fMaxFileSize = Integer.parseInt(getServletContext().getInitParameter("silenus.maxSize"));
+		return fMaxFileSize;
+	}
+	
 	
 	// upload a file
 	public AnimationDTO parseFLA(byte[] bytes) throws ParseException {
@@ -145,7 +151,7 @@ public class SilenusServerImpl extends RemoteServiceServlet implements SilenusSe
 			throw new ParseException("Failed to parse file. Maybe your FLA was not created with Adobe Flash CS5, or you didn't upload an FLA fila at all?");
 		}
 		catch (com.silenistudios.silenus.ParseException e) {
-			throw new ParseException(e.getMessage());
+			throw new ParseException("Failed to parse file. Maybe your FLA was not created with Adobe Flash CS5, or you didn't upload an FLA fila at all?");
 		}
 	}
 	

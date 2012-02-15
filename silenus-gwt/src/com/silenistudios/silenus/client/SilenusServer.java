@@ -13,4 +13,7 @@ public interface SilenusServer extends RemoteService {
 	
 	// cleanup
 	public void cleanup(String fileHash);
+	
+	// get max file size
+	public int getMaxFileSize();
 }
