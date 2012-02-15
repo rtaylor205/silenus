@@ -14,13 +14,13 @@ The following code will load an .FLA file and and render it on screen in java:
 // parse and set up XFL
 XFLDocument xfl = new XFLDocument();
 xfl.parseXFL(directoryName);
-JPanel renderer = new RawJavaRenderer(xfl), xfl.getWidth(), xfl.getHeight(), "Silenus demo");
+JPanel renderer = new RawJavaRenderer(xfl);
 
 // render in JFrame
-JFrame frame = new JFrame(title);
+JFrame frame = new JFrame("Silenus demo");
 frame.setBackground(Color.white);
 content.setBackground(Color.white);
-frame.setSize(width, height + 50); // 50 for header
+frame.setSize(xfl.getWidth(), xfl.getHeight() + 50); // 50 for header
 frame.setContentPane(content);
 frame.addWindowListener(new WindowAdapter() {
   @Override
