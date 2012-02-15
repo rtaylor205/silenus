@@ -1,4 +1,4 @@
-#summary Getting started tutorial for Silenus.
+#summary Getting started with Silenus.
 
 = Introduction =
 
