@@ -5,6 +5,12 @@
          version="2.5"
          xmlns="http://java.sun.com/xml/ns/javaee">
 
+  <!--  Max upload size for the FLA (in kilobytes) -->
+  <context-param>
+    <param-name>silenus.maxSize</param-name>
+    <param-value>2048</param-value>
+  </context-param>
+
   <!-- Servlets -->
   <servlet>
     <servlet-name>silenusServer</servlet-name>
