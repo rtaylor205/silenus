@@ -120,7 +120,7 @@ public class XFLDocument implements XFLLibrary{
 	// unzip an FLA fipe
 	private void unzipFLA(String fileName, String pathName) throws ParseException {
 		try {
-			System.out.println("Opening " + fileName);
+			
 			// read zip file
 			InputStream fis = fStreamFactory.createInputStream(new File(fileName));
 			ZipInputStream zin = new ZipInputStream(new BufferedInputStream(fis));
