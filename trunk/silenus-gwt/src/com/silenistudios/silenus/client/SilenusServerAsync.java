@@ -9,4 +9,6 @@ public interface SilenusServerAsync {
 
 	void cleanup(String fileHash, AsyncCallback<Void> callback);
 
+	void getMaxFileSize(AsyncCallback<Integer> callback);
+
 }

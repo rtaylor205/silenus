@@ -75,7 +75,7 @@ public class Main implements EntryPoint, MainCallback {
 		description.add("In addition to this, you can also export the resulting data as json, allowing you to export this raw data to any language or project and use your Flash animation in any environment without needing Flash.").br().br();
 		panel.add(description);
 		
-		info("Please select a file below to upload it to the server (max size: 2MB)");
+		info("Please select a file below to upload it to the server.");
 		panel.add(fStatus);
 		final Form form = new Form();
 		FormFileSelect uploader = new FormFileSelect(this, false, new FormFileSelect.Handler() {
