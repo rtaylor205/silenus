@@ -1,4 +1,4 @@
-#summary Instructions for including Silenus in your own project.
+#summary Instructions for using Silenus in your own project.
 
 = Installation =
 
