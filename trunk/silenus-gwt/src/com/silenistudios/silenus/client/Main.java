@@ -59,6 +59,8 @@ public class Main implements EntryPoint, MainCallback {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
+		System.out.println(GWT.getHostPageBaseURL());
+		System.out.println(GWT.getModuleBaseURL());
 		
 		// create a simple form
 		FlowPanel panel = new FlowPanel();
@@ -129,7 +131,7 @@ public class Main implements EntryPoint, MainCallback {
 		
 		// add JSON link
 		final TextBlock block = new TextBlock();
-		block.add("Download JSON", "/silenus_gwt/silenus_gwt/silenusImages?fileHash=" + fAnimation.fileHash, "_blank");
+		block.add("Download JSON", GWT.getModuleBaseURL() + "silenusImages?fileHash=" + fAnimation.fileHash, "_blank");
 		fPanel.add(block);
 		
 		// prepare images
@@ -149,7 +151,7 @@ public class Main implements EntryPoint, MainCallback {
 		for (int i = 0; i < fAnimation.images.length; ++i) {
 			final int idx = i;
 			final String fileName = fAnimation.images[i];
-			String filePath = "/silenus_gwt/silenus_gwt/silenusImages?fileHash=" + fAnimation.fileHash + "&fileName=" + fileName;
+			String filePath = GWT.getModuleBaseURL() + "silenusImages?fileHash=" + fAnimation.fileHash + "&fileName=" + fileName;
 			
 			// load the image using the async image loader
 			ImageLoader.loadImageAsync(filePath, new ResourceCallback<ImageElementResource>() {
