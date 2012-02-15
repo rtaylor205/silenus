@@ -1,0 +1,64 @@
+/** Add css rules here for your application. */
+
+
+#center {
+	position: relative;
+	width: 0px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#main {
+	position: absolute;
+	width: 450px;
+	left: -450px;
+	border: 2px solid black;
+	padding: 20px;
+	padding-top: 10px;
+}
+
+#render {
+	position: absolute;
+	left: 50px;
+}
+
+#canvas {
+	left: 0;
+	top: 0px;
+}
+
+.canvas-active {
+	border: 2px solid black;
+}
+
+.error {
+	color: red;
+	font-weight: bold;
+}
+
+.info {
+	font-weight: bold;
+}
+
+.link:hover {
+	cursor: pointer;
+}
+
+.inline {
+	display: inline;
+}
+
+.title {
+	font-size: 22pt;
+	font-weight: bold;
+	margin-bottom: 5px;
+	margin-top: 0px;
+}
+
+.json {
+	border: 1px solid red;
+	margin: 5px;
+	padding: 5px;
+	margin-top: 15px;
+	font-size: 8pt;
+}
