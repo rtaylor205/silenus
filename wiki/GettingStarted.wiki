@@ -4,7 +4,7 @@
 
 First, you need determine what you want to use Silenus for, in order to know which release you should download.
 
-If you want to include Silenus in your java project to be able to render flash animations, you should download silenus.jar and add it to your build path. Then you should follow the instructions on GetingStartedJar to use Silenus.
+If you want to include Silenus in your java project to be able to render flash animations, you should download silenus.jar and add it to your build path. Then you should follow the instructions on [GetingStartedJar this page] to use Silenus.
 
 If you want to see what Silenus can do, you should download silenus-java.zip. This file includes a small sample .FLA file that you can test, and will render any .FLA file (from CS5) that you give it at the command line. Follow the instructions on [GettingStartedStandalone this page] to run the program.
 
