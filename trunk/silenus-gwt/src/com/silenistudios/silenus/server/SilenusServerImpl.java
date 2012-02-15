@@ -73,6 +73,13 @@ public class SilenusServerImpl extends RemoteServiceServlet implements SilenusSe
 	}
 	
 	
+	// cleanup
+	public void cleanup(String fileHash) {
+		fStreamFactories.remove(fileHash);
+		fJSON.remove(fileHash);
+	}
+	
+	
 	
 	// upload a file
 	public AnimationDTO parseFLA(byte[] bytes) throws ParseException {

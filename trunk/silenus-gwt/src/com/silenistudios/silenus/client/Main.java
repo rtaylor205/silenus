@@ -159,17 +159,30 @@ public class Main implements EntryPoint, MainCallback {
 				@Override
 				public void onError(ResourceException e) {
 					error("Failed to load image '" + fileName + '"');
+					cleanup();
 				}
 
 				@Override
 				public void onSuccess(ImageElementResource resource) {
 					fImages[idx] = resource.getImage();
 					--fImagesLeft;
+					cleanup();
 					if (fImagesLeft == 0) startDraw();
 				}
 				
 			});
 		}
+	}
+	
+	
+	// send a "clean up" command to the server to wipe memory
+	private void cleanup() {
+		fServer.cleanup(fAnimation.fileHash, new BasicCallback<Void>(this) {
+			@Override
+			public void onSuccess(Void result) {
+				// all ok
+			}
+		});
 	}
 	
 	

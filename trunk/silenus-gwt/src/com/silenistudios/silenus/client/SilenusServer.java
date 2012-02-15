@@ -10,4 +10,7 @@ public interface SilenusServer extends RemoteService {
 	
 	// upload a CS5 .FLA file
 	public AnimationDTO parseFLA(byte[] data) throws ParseException;
+	
+	// cleanup
+	public void cleanup(String fileHash);
 }
