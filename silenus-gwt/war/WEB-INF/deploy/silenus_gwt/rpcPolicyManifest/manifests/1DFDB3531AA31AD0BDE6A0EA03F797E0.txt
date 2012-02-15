@@ -1,0 +1,2 @@
+serviceClass: com.silenistudios.silenus.client.SilenusServer
+path: A4439A1A524F3EB20F784C4971D29A88.gwt.rpc

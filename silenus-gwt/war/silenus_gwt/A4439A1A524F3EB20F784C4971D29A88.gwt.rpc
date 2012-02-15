@@ -1,0 +1,17 @@
+[B, false, false, true, true, [B/3308590456, 3308590456
+com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException, true, true, true, true, com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException/3936916533, 3936916533
+com.google.gwt.user.client.rpc.RpcTokenException, true, true, false, false, com.google.gwt.user.client.rpc.RpcTokenException/2345075298, 2345075298
+com.google.gwt.user.client.rpc.XsrfToken, false, false, true, true, com.google.gwt.user.client.rpc.XsrfToken/4254043109, 4254043109
+com.silenistudios.silenus.client.SilenusServer, false, false, false, false, _, 3636502316
+com.silenistudios.silenus.shared.AnimationDTO, true, true, false, false, com.silenistudios.silenus.shared.AnimationDTO/3448778347, 3448778347
+com.silenistudios.silenus.shared.BitmapDTO, true, true, false, false, com.silenistudios.silenus.shared.BitmapDTO/1762514337, 1762514337
+[Lcom.silenistudios.silenus.shared.BitmapDTO;, true, true, false, false, [Lcom.silenistudios.silenus.shared.BitmapDTO;/4191932109, 4191932109
+com.silenistudios.silenus.shared.FrameDTO, true, true, false, false, com.silenistudios.silenus.shared.FrameDTO/2803596418, 2803596418
+[Lcom.silenistudios.silenus.shared.FrameDTO;, true, true, false, false, [Lcom.silenistudios.silenus.shared.FrameDTO;/1596980051, 1596980051
+com.silenistudios.silenus.shared.ParseException, true, true, false, false, com.silenistudios.silenus.shared.ParseException/2168306317, 2168306317
+com.silenistudios.silenus.shared.TransformationDTO, true, true, false, false, com.silenistudios.silenus.shared.TransformationDTO/3080819478, 3080819478
+java.lang.Exception, true, false, true, false, java.lang.Exception/1920171873, 1920171873
+java.lang.RuntimeException, true, false, true, false, java.lang.RuntimeException/515124647, 515124647
+java.lang.String, true, true, true, true, java.lang.String/2004016611, 2004016611
+[Ljava.lang.String;, true, true, false, false, [Ljava.lang.String;/2600011424, 2600011424
+java.lang.Throwable, true, false, true, false, java.lang.Throwable/2953622131, 2953622131
