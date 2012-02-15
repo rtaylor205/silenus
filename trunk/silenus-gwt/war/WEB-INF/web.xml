@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+              http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         version="2.5"
+         xmlns="http://java.sun.com/xml/ns/javaee">
+
+  <!-- Servlets -->
+  <servlet>
+    <servlet-name>silenusServer</servlet-name>
+    <servlet-class>com.silenistudios.silenus.server.SilenusServerImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>silenusServer</servlet-name>
+    <url-pattern>/silenus_gwt/silenusServer</url-pattern>
+  </servlet-mapping>
+  
+   <servlet>
+    <servlet-name>silenusImages</servlet-name>
+    <servlet-class>com.silenistudios.silenus.server.ImageServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>silenusImages</servlet-name>
+    <url-pattern>/silenus_gwt/silenusImages</url-pattern>
+  </servlet-mapping>
+  
+  <!-- Default page to serve -->
+  <welcome-file-list>
+    <welcome-file>Silenus.html</welcome-file>
+  </welcome-file-list>
+
+</web-app>
