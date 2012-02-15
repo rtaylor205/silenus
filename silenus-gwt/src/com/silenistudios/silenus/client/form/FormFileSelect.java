@@ -153,18 +153,15 @@ public class FormFileSelect extends FormField {
 	
 	// upload file
 	private void uploadFile(String fileName, byte[] bytes) {
-		if (bytes.length > 1024 * 1024 * 2) fMain.error("This file is larger than 2MB! (size: " + ((double)bytes.length / 1024.0 / 1024.0) + "MB)");
-		else {
-			fHandler.onFileStarted(fileName);
-			fServer.parseFLA(bytes, new BasicCallback<AnimationDTO>(fMain) {
-				
-				@Override
-				public void onSuccess(AnimationDTO result) {
-					fHandler.onFileLoaded(result);
-				}
-				
-			});
-		}
+		fHandler.onFileStarted(fileName);
+		fServer.parseFLA(bytes, new BasicCallback<AnimationDTO>(fMain) {
+			
+			@Override
+			public void onSuccess(AnimationDTO result) {
+				fHandler.onFileLoaded(result);
+			}
+			
+		});
 	}
 	
 	// update progress

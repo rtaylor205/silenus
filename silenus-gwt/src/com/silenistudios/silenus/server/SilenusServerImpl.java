@@ -46,6 +46,9 @@ public class SilenusServerImpl extends RemoteServiceServlet implements SilenusSe
 	// map of stream factories (file systems) that are currently hosted
 	Map<String, StreamFactory> fStreamFactories = new HashMap<String, StreamFactory>();
 	
+	// max file size (in KB)
+	int fMaxFileSize = 0;
+	
 	// map of file hash to JSON
 	Map<String, String> fJSON = new HashMap<String, String>();
 	
@@ -87,6 +90,15 @@ public class SilenusServerImpl extends RemoteServiceServlet implements SilenusSe
 		
 		// create the file
 		try {
+			
+			// check file size
+			if (fMaxFileSize == 0) fMaxFileSize = Integer.parseInt(getServletContext().getInitParameter("silenus.maxSize"));
+			if (bytes.length > fMaxFileSize * 1024) {
+				String limit = fMaxFileSize + "KB";
+				if (fMaxFileSize / 1024 > 2) limit = (fMaxFileSize/1024) + "MB";
+				throw new ParseException("Your file is too large! Max size allowed: " + limit + ".");
+			}
+			
 			
 			// generate a unique hash to save this file as
 			UUID id = UUID.randomUUID();
@@ -130,7 +142,7 @@ public class SilenusServerImpl extends RemoteServiceServlet implements SilenusSe
 			return dto;
 		}
 		catch (IOException e) {
-			throw new ParseException("Failed to upload file: " + e.getMessage());
+			throw new ParseException("Failed to parse file. Maybe your FLA was not created with Adobe Flash CS5, or you didn't upload an FLA fila at all?");
 		}
 		catch (com.silenistudios.silenus.ParseException e) {
 			throw new ParseException(e.getMessage());
