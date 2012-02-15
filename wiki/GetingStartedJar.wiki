@@ -7,7 +7,31 @@ Download silenus.jar and add it to your build path. It has no external dependenc
 
 = Use =
 
-the XFLDocument class is the enry point to the framework. In order to set up, parse and animate an XFL document (or CS5 FLA file), follow these steps:
+The following code will load an .FLA file and and render it on screen in java:
+
+{{{
+
+// parse and set up XFL
+XFLDocument xfl = new XFLDocument();
+xfl.parseXFL(directoryName);
+JPanel renderer = new RawJavaRenderer(xfl), xfl.getWidth(), xfl.getHeight(), "Silenus demo");
+
+// render in JFrame
+JFrame frame = new JFrame(title);
+frame.setBackground(Color.white);
+content.setBackground(Color.white);
+frame.setSize(width, height + 50); // 50 for header
+frame.setContentPane(content);
+frame.addWindowListener(new WindowAdapter() {
+  @Override
+  public void windowClosing(WindowEvent event) {
+    System.exit(0);
+  }
+});
+frame.setVisible(true);
+}}}
+
+the XFLDocument class is the enry point to the framework. The following steps explain in more detail how to use Silenus:
 
  # Create an `XFLDocument` object.
  # (optional) Assign an alternative `XMLUtility` for parsing XML files - can be used to override the default XML parser from javax.xml that is used.
@@ -17,7 +41,6 @@ the XFLDocument class is the enry point to the framework. In order to set up, pa
 
 
 This is all there is to animating a flash file using Silenus.
-
 
 = Use Silenus as an export tool =
 
