@@ -26,6 +26,7 @@ import com.silenistudios.silenus.StreamFactory;
 import com.silenistudios.silenus.XFLDocument;
 import com.silenistudios.silenus.client.SilenusServer;
 import com.silenistudios.silenus.dom.Bitmap;
+import com.silenistudios.silenus.memory.MemoryStreamFactory;
 import com.silenistudios.silenus.raw.AnimationBitmapData;
 import com.silenistudios.silenus.raw.AnimationData;
 import com.silenistudios.silenus.raw.AnimationFrameData;
@@ -147,6 +148,7 @@ public class SilenusServerImpl extends RemoteServiceServlet implements SilenusSe
 		dto.width = animation.getWidth();
 		dto.height = animation.getHeight();
 		dto.frameRate = animation.getFrameRate();
+		dto.json = animation.getJSON();
 		
 		// set up the bitmaps
 		Vector<Bitmap> bitmaps = animation.getBitmaps();
