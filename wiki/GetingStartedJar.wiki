@@ -9,7 +9,7 @@ Download silenus.jar and add it to your build path. It has no external dependenc
 
 the XFLDocument class is the enry point to the framework. In order to set up, parse and animate an XFL document (or CS5 FLA file), follow these steps:
 
- # Create an *XFLDocument* object.
+ # Create an `XFLDocument` object.
  # (optional) Assign an alternative *XMLUtility* for parsing XML files - can be used to override the default XML parser from javax.xml that is used.
  # (optional) Assign an alternative *StreamFactory*. This can be used to change the way *XFLDocument* stores the files expanded from the FLA file, and how the converted PNG's are saved. By default, *XFLDocument* will create all the files in the directory where the FLA can be found. See the section below for expanding in memory.
  # Call _parseXFL('/path/to/file.fla')_ to unzip file.fla, convert the binary images to png and store everything in the /path/to directory. _Call parseXFL('/path/to/xfl/dir')_ to read the uncompressed XFL directory (if the .fla was unzipped by the user before, or if the flash document was saved with the 'save as uncompressed XFL' option).
