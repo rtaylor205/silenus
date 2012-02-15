@@ -4,12 +4,19 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
 
 import javax.swing.JFrame;
 
 import com.silenistudios.silenus.ParseException;
+import com.silenistudios.silenus.RawJavaRenderer;
 import com.silenistudios.silenus.XFLDocument;
-import com.silenistudios.silenus.java.xml.JavaXMLUtility;
 
 /**
  * This demo will take any XFL directory from the command line, and render it to screen.
@@ -24,8 +31,9 @@ public class Main {
 		String directoryName = "example/example.fla";
 		if (args.length > 0) directoryName = args[0];
 		
+		
 		// parse an XFL document and render it to screen
-		XFLDocument xfl = new XFLDocument(new JavaXMLUtility());
+		XFLDocument xfl = new XFLDocument();
 		try {
 			
 			// parse document
