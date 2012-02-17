@@ -25,17 +25,17 @@ import com.silenistudios.silenus.xml.Node;
  */
 public class Keyframe {
 	
-	// list of symbol instances in this keyframe, mapped by their library name for quick access
-	Map<String, SymbolInstance> fSymbolInstancesMap = new HashMap<String, SymbolInstance>();
-	
-	// list of bitmap instances, mapped by their library name for quick access
-	Map<String, BitmapInstance> fBitmapInstancesMap = new HashMap<String, BitmapInstance>();
+	// list of instances in this keyframe, mapped by their library name for quick access
+	Map<String, Instance> fInstances = new HashMap<String, Instance>();
 	
 	// list of symbol instances in the right drawing order
 	List<SymbolInstance> fSymbolInstances = new LinkedList<SymbolInstance>();
 	
 	// list of bitmap instances in the right drawing order
 	List<BitmapInstance> fBitmapInstances = new LinkedList<BitmapInstance>();
+	
+	// shapes
+	List<Shape> fShapes = new LinkedList<Shape>();
 	
 	// index
 	int fIndex;
@@ -92,7 +92,7 @@ public class Keyframe {
 		
 		// get all instances
 		Node elements = XMLUtility.findNode(root,  "elements");
-		Vector<Node> instances = XMLUtility.getChildNodes(elements);
+		Vector<Node> instances = XMLUtility.getChildElements(elements);
 		for (Node node : instances) {
 			
 			// one instance will be made
@@ -104,21 +104,29 @@ public class Keyframe {
 				// it's a bitmap instance
 				if (node.getNodeName().equals("DOMBitmapInstance")) {
 					instance = new BitmapInstance(XMLUtility, library, node, fIndex);
-					fBitmapInstancesMap.put(instance.getLibraryItemName(), (BitmapInstance)instance);
 					fBitmapInstances.add((BitmapInstance)instance);
 				}
 				
 				// it's a symbol instance
 				else if (node.getNodeName().equals("DOMSymbolInstance")) {
 					instance = new SymbolInstance(XMLUtility, library, node, fIndex);
-					fSymbolInstancesMap.put(instance.getLibraryItemName(), (SymbolInstance)instance);
 					fSymbolInstances.add((SymbolInstance)instance);
+				}
+				
+				// it's a shape
+				else if (node.getNodeName().equals("DOMShape")) {
+					instance = new Shape(XMLUtility, node, fIndex);
+					fShapes.add((Shape)instance);
+					
 				}
 				
 				// unknown instance - skip
 				else {
 					continue;
 				}
+				
+				// add to map
+				if (instance.getLibraryItemName().length() > 0) fInstances.put(instance.getLibraryItemName(), instance);
 				
 				// if there's in-between matrices, we add them to the instance
 				if (inBetweenMatrices != null) {
@@ -127,6 +135,7 @@ public class Keyframe {
 			}
 			
 			catch (ParseException e) {
+				e.printStackTrace();
 				// invalid reference found - ignore it
 			}
 		}
@@ -186,15 +195,15 @@ public class Keyframe {
 	}
 	
 	
-	// get a symbol instance by library name
-	public SymbolInstance getSymbolInstance(String libraryItemName) {
-		return fSymbolInstancesMap.get(libraryItemName);
+	// get all shapes
+	public Collection<Shape> getShapes() {
+		return fShapes;
 	}
 	
 	
-	// get a symbol instance by library name
-	public BitmapInstance getBitmapInstance(String libraryItemName) {
-		return fBitmapInstancesMap.get(libraryItemName);
+	// get an instance by library name
+	public Instance getInstance(String libraryItemName) {
+		return fInstances.get(libraryItemName);
 	}
 	
 	

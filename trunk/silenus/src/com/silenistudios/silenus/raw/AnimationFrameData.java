@@ -37,13 +37,17 @@ public class AnimationFrameData implements Serializable {
 		StringBuilder ss = new StringBuilder();
 		ss.append("[");
 		for (int i = 0; i < fBitmaps.size(); ++i) {
+			AnimationBitmapData bitmap = fBitmaps.get(i);
 			if (i != 0) ss.append(",");
 			ss.append("{");
-			TransformationMatrix m = fBitmaps.get(i).getTransformationMatrix();
+			TransformationMatrix m = bitmap.getTransformationMatrix();
 			ss.append("\"translate\":[").append(m.getTranslateX()).append(",").append(m.getTranslateY()).append("],");
 			ss.append("\"scale\":[").append(m.getScaleX()).append(",").append(m.getScaleY()).append("],");
 			ss.append("\"rotation\":").append(m.getRotation()).append(",");
-			ss.append("\"bitmap\":\"").append(fBitmaps.get(i).getBitmap().getSourceHref()).append("\"");
+			ss.append("\"bitmap\":\"").append(bitmap.getBitmap().getSourceHref()).append("\"");
+			if (bitmap.hasColorManipulation()) {
+				ss.append(",\"colorManipulation\":").append(bitmap.getColorManipulation().getJSON());
+			}
 			ss.append("}");
 		}
 		ss.append("]");

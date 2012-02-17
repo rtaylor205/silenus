@@ -5,9 +5,13 @@ import java.util.Stack;
 import java.util.Vector;
 
 import com.silenistudios.silenus.dom.BitmapInstance;
+import com.silenistudios.silenus.dom.Edge;
 import com.silenistudios.silenus.dom.Instance;
 import com.silenistudios.silenus.dom.Keyframe;
 import com.silenistudios.silenus.dom.Layer;
+import com.silenistudios.silenus.dom.Line;
+import com.silenistudios.silenus.dom.Path;
+import com.silenistudios.silenus.dom.Shape;
 import com.silenistudios.silenus.dom.SymbolInstance;
 import com.silenistudios.silenus.dom.Timeline;
 import com.silenistudios.silenus.raw.ColorManipulation;
@@ -103,7 +107,7 @@ public class SceneRenderer {
 		for (BitmapInstance i1 : bitmapInstances) {
 			
 			// get the instance in the second frame
-			BitmapInstance i2 = f2.getBitmapInstance(i1.getLibraryItemName());
+			Instance i2 = f2.getInstance(i1.getLibraryItemName());
 			
 			// save transformation matrix
 			fRenderer.save();
@@ -132,7 +136,7 @@ public class SceneRenderer {
 		for (SymbolInstance i1 : symbolInstances) {
 			
 			// get the instance in the second frame
-			SymbolInstance i2 = f2.getSymbolInstance(i1.getLibraryItemName());
+			Instance i2 = f2.getInstance(i1.getLibraryItemName());
 			
 			// save transformation matrix
 			fRenderer.save();
@@ -141,7 +145,6 @@ public class SceneRenderer {
 			transformInstance(i1, i2, d, frame);
 			
 			// render all sub-layers
-			
 			Timeline timeline = i1.getGraphic().getTimeline();
 			Vector<Layer> layers = timeline.getLayers();
 			for (Layer layer : layers) {
@@ -150,6 +153,26 @@ public class SceneRenderer {
 			
 			// done
 			resetInstance(i1, i2);
+			fRenderer.restore();
+		}
+		
+		
+		// walk over all shapes - shapes have no tweens
+		// TODO is this always true?
+		Collection<Shape> shapes = f1.getShapes();
+		for (Shape i1 : shapes) {
+			
+			// save transformation matrix
+			fRenderer.save();
+						
+			// move/scale/rotate to the correct position
+			transformInstance(i1, i1, d, frame);
+			
+			// render the shape
+			renderShape(i1);
+			
+			// done
+			resetInstance(i1, i1);
 			fRenderer.restore();
 		}
 	}
@@ -178,10 +201,12 @@ public class SceneRenderer {
 			
 			// scale
 			fRenderer.scale(interpolateValues(i1.getScaleX(), i2.getScaleX(), d), interpolateValues(i1.getScaleY(), i2.getScaleY(), d));
-			
+			//System.out.println("Scale: " + i1.getScaleX() + "," + i1.getScaleY());
 			// rotate
 			fRenderer.rotate(interpolateValues(-i1.getRotation(), -i2.getRotation(), d));
-			
+			/*TransformationMatrix m = i1.getTransformationMatrix();
+			fRenderer.transform(m.getMatrix()[0][0], m.getMatrix()[0][1], m.getMatrix()[1][0], m.getMatrix()[1][1], i1.getTranslateX(), i1.getTranslateY());
+			*/
 		}
 		
 		/**
@@ -226,6 +251,27 @@ public class SceneRenderer {
 		if (i1.hasColorManipulation() || i2.hasColorManipulation()) {
 			fColorManipulationStack.pop();
 		}
+	}
+	
+	
+	// render a shape
+	private void renderShape(Shape shape) {
+		
+		// draw all the fill paths
+		Vector<Path> fillPaths = shape.getFillPaths();
+		for (Path path : fillPaths) {
+			fRenderer.drawPath(path);
+			fRenderer.fill(shape.getFillStyle(path.getIndex()));
+		}
+		
+		
+		// draw all the stroke paths
+		Vector<Path> strokePaths = shape.getStrokePaths();
+		for (Path path : strokePaths) {
+			fRenderer.drawPath(path);
+			fRenderer.stroke(shape.getStrokeStyle(path.getIndex()));
+		}
+		
 	}
 	
 	

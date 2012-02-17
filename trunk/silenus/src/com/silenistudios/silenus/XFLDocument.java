@@ -170,31 +170,35 @@ public class XFLDocument implements XFLLibrary{
 	private void loadDOMDocument(Node root) throws ParseException {
 		
 		// width and height
-		fWidth = XMLUtility.getIntAttribute(root, "width");
-		fHeight = XMLUtility.getIntAttribute(root, "height");
+		fWidth = XMLUtility.getIntAttribute(root, "width", 550);
+		fHeight = XMLUtility.getIntAttribute(root, "height", 400);
 		
 		// frame rate
 		fFrameRate = XMLUtility.getIntAttribute(root, "frameRate", 24);
 		
 		// load the media and convert the binary files back to png
-		Node media = XMLUtility.findNode(root,  "media");
-		Vector<Node> bitmaps = XMLUtility.findNodes(media, "DOMBitmapItem");
-		for (Node node : bitmaps) {
-			Bitmap bitmap = new Bitmap(XMLUtility, fStreamFactory, fRoot, node);
-			fBitmaps.put(bitmap.getName(), bitmap);
+		if (XMLUtility.hasNode(root, "media")) {
+			Node media = XMLUtility.findNode(root,  "media");
+			Vector<Node> bitmaps = XMLUtility.findNodes(media, "DOMBitmapItem");
+			for (Node node : bitmaps) {
+				Bitmap bitmap = new Bitmap(XMLUtility, fStreamFactory, fRoot, node);
+				fBitmaps.put(bitmap.getName(), bitmap);
+			}
 		}
 		
 		
 		// read all symbols - don't load them yet!
-		Node symbols = XMLUtility.findNode(root, "symbols");
-		Vector<Node> includes = XMLUtility.findNodes(symbols, "Include");
-		Map<String, Node> nameToNode = new HashMap<String, Node>();
-		for (Node node : includes) 	loadInclude(nameToNode, node);
-		
-		// now, load the graphics
-		// by using this trick, we can resolve references immediately
-		for (Entry<String, Node> entry : nameToNode.entrySet()) {
-			getGraphic(entry.getKey()).loadGraphic(XMLUtility, this, entry.getValue());
+		if (XMLUtility.hasNode(root,  "symbols")) {
+			Node symbols = XMLUtility.findNode(root, "symbols");
+			Vector<Node> includes = XMLUtility.findNodes(symbols, "Include");
+			Map<String, Node> nameToNode = new HashMap<String, Node>();
+			for (Node node : includes) 	loadInclude(nameToNode, node);
+			
+			// now, load the graphics
+			// by using this trick, we can resolve references immediately
+			for (Entry<String, Node> entry : nameToNode.entrySet()) {
+				getGraphic(entry.getKey()).loadGraphic(XMLUtility, this, entry.getValue());
+			}
 		}
 		
 		// read the scenes

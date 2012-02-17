@@ -95,13 +95,27 @@ public class TransformationMatrix implements Serializable {
 	
 	// get x scale value
 	public double getScaleX() {
-		return Math.sqrt(fMatrix[0][0]*fMatrix[0][0] + fMatrix[0][1]*fMatrix[0][1]);
+		//return getRotation() * (fMatrix[0][0]*fMatrix[1][1] - fMatrix[0][1]*fMatrix[1][0]) / fMatrix[0][0];
+		return sign(fMatrix[0][0]) * Math.sqrt(fMatrix[0][0]*fMatrix[0][0] + fMatrix[0][1]*fMatrix[0][1]);
 	}
 	
 	
 	// get y scale
 	public double getScaleY() {
-		return Math.sqrt(fMatrix[1][0]*fMatrix[1][0] + fMatrix[1][1]*fMatrix[1][1]);
+		return sign(fMatrix[1][1]) * Math.sqrt(fMatrix[1][0]*fMatrix[1][0] + fMatrix[1][1]*fMatrix[1][1]);
+	}
+	
+	
+	// determinant of the matric
+	private double det() {
+		return fMatrix[0][0]*fMatrix[1][1] - fMatrix[0][1]*fMatrix[1][0];
+	}
+	
+	
+	// sign
+	private double sign(double x) {
+		return (Math.abs(x) < 0.0000001) ? 1 : x / Math.abs(x);
+		//return x / Math.abs(x);
 	}
 	
 	

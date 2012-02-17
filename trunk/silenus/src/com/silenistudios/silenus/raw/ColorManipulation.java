@@ -128,10 +128,29 @@ public class ColorManipulation implements Serializable {
 		if (this.fAlphaMultiplier - c.fAlphaMultiplier > 0.00001) return false;
 		if (this.fRedMultiplier - c.fRedMultiplier > 0.00001) return false;
 		if (this.fGreenMultiplier - c.fGreenMultiplier > 0.00001) return false;
+		if (this.fBlueMultiplier - c.fBlueMultiplier > 0.00001) return false;
 		if (this.fAlphaOffset - c.fAlphaOffset > 0.00001) return false;
 		if (this.fRedOffset - c.fRedOffset > 0.00001) return false;
 		if (this.fGreenOffset - c.fGreenOffset > 0.00001) return false;
 		if (this.fBlueOffset - c.fBlueOffset > 0.00001) return false;
 		return true;
+	}
+	
+	
+	// get JSON representation
+	public String getJSON() {
+		StringBuilder ss = new StringBuilder();
+		ss.append("{");
+		ss.append("\"alphaMultiplier\":").append(fAlphaMultiplier).append(",");
+		ss.append("\"redMultiplier\":").append(fRedMultiplier).append(",");
+		ss.append("\"greenMultiplier\":").append(fGreenMultiplier).append(",");
+		ss.append("\"blueMultiplier\":").append(fBlueMultiplier).append(",");
+		ss.append("\"alphaOffset\":").append(fAlphaOffset).append(",");
+		ss.append("\"redOffset\":").append(fRedOffset).append(",");
+		ss.append("\"greenOffset\":").append(fGreenOffset).append(",");
+		ss.append("\"blueOffset\":").append(fBlueOffset);
+		ss.append("}");
+		return ss.toString();
+		
 	}
 }

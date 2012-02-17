@@ -44,7 +44,7 @@ public class Instance {
 	public Instance(XMLUtility XMLUtility, Node root, int frameIndex) throws ParseException {
 		
 		// library item name
-		fLibraryItemName = XMLUtility.getAttribute(root, "libraryItemName");
+		fLibraryItemName = XMLUtility.getAttribute(root, "libraryItemName", "");
 		
 		// frame index (same for all instances in the same parent frame)
 		fFrameIndex = frameIndex;
