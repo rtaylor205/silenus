@@ -1,8 +1,12 @@
 package com.silenistudios.silenus;
 
+import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Composite;
+import java.awt.Paint;
+import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
@@ -14,6 +18,9 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
@@ -21,6 +28,11 @@ import com.silenistudios.silenus.RenderInterface;
 import com.silenistudios.silenus.SceneRenderer;
 import com.silenistudios.silenus.XFLDocument;
 import com.silenistudios.silenus.dom.Bitmap;
+import com.silenistudios.silenus.dom.Color;
+import com.silenistudios.silenus.dom.FillStyle;
+import com.silenistudios.silenus.dom.Path;
+import com.silenistudios.silenus.dom.Point;
+import com.silenistudios.silenus.dom.StrokeStyle;
 import com.silenistudios.silenus.dom.Timeline;
 import com.silenistudios.silenus.raw.ColorManipulation;
 
@@ -56,6 +68,9 @@ public class JavaRenderer extends JPanel implements RenderInterface {
 	// the scene
 	Timeline fScene;
 	
+	// general path
+	GeneralPath fPath;
+	
 	
 	// constructor
 	public JavaRenderer(XFLDocument doc) {
@@ -82,7 +97,7 @@ public class JavaRenderer extends JPanel implements RenderInterface {
 		int frameRate = doc.getFrameRate();
 		
 		// launch a timer to draw the animation
-		Timer timer = new Timer();
+		final Timer timer = new Timer();
 		timer.scheduleAtFixedRate(new TimerTask() {
 
 			@Override
@@ -100,13 +115,10 @@ public class JavaRenderer extends JPanel implements RenderInterface {
 	public void paintComponent(Graphics g) {
 		clear(g);
 		fSurface = (Graphics2D)g;
+		fSurface.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 		fRenderer.render(fFrame % (fScene.getMaxFrameIndex()+1));
-		//fRenderer.render(0);
 	}
-
-	// super.paintComponent clears offscreen pixmap,
-	// since we're using double buffering by default.
-
+	
 	protected void clear(Graphics g) {
 		super.paintComponent(g);
 	}
@@ -134,7 +146,7 @@ public class JavaRenderer extends JPanel implements RenderInterface {
 
 	@Override
 	public void translate(double x, double y) {
-		fSurface.translate(x,  y);
+		fSurface.translate((int)x,  (int)y);
 	}
 
 
@@ -176,4 +188,44 @@ public class JavaRenderer extends JPanel implements RenderInterface {
 		// draw
 		fSurface.drawImage(out, new AffineTransform(1f,0f,0f,1f,0,0), null);
 	}
+	
+	
+	@Override
+	public void drawPath(Path path) {
+		fPath = new GeneralPath();
+		boolean first = true;
+		for (Point p : path.getPoints()) {
+			if (first) {
+				fPath.moveTo(p.getX(), p.getY());
+				first = false;
+			}
+			else fPath.lineTo(p.getX(), p.getY());
+		}
+	}
+
+
+	@Override
+	public void fill(FillStyle fillStyle) {
+		Color color = fillStyle.getColor();
+		Paint paint = new java.awt.Color(color.getRed(), color.getGreen(), color.getBlue(), (int)(color.getAlpha() * 255));
+		fSurface.setPaint(paint);
+		fPath.closePath();
+		fSurface.fill(fPath);
+	}
+
+
+	@Override
+	public void stroke(StrokeStyle strokeStyle) {
+		Color color = strokeStyle.getColor();
+		Paint paint = new java.awt.Color(color.getRed(), color.getGreen(), color.getBlue(), (int)(color.getAlpha() * 255));
+		fSurface.setPaint(paint);
+		fSurface.draw(fPath);
+	}
+
+	@Override
+	public void transform(double m00, double m01, double m10, double m11, double tx, double ty) {
+		fSurface.transform(new AffineTransform(m00, m01, m10, m11, tx, ty));
+		
+	}
+	
 }

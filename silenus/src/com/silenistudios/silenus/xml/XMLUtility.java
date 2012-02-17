@@ -21,12 +21,15 @@ public interface XMLUtility {
 	// get the first element with a given tag
 	public Node findNode(Node root, String nodeName) throws ParseException;
 	
+	// is there such a node?
+	public boolean hasNode(Node root, String nodeName) throws ParseException;
+	
 	
 	// get all subnodes with the given tag
 	public Vector<Node> findNodes(Node root, String nodeName) throws ParseException;
 	
-	// get all child nodes
-	public Vector<Node> getChildNodes(Node root);
+	// get all child elements - ignoring other types of nodes
+	public Vector<Node> getChildElements(Node root);
 	
 	
 	// does the node have this attribute?

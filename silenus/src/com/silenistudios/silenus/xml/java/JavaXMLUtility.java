@@ -54,6 +54,15 @@ public class JavaXMLUtility implements XMLUtility {
 	}
 	
 	
+	// is there a node with this name?
+	public boolean hasNode(Node nodeRoot, String nodeName) throws ParseException {
+		org.w3c.dom.Node root = ((JavaNode)nodeRoot).getNode();
+		if (root.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) throw new ParseException("XMLUtility: node " + nodeName + " is not an element");
+		NodeList nodes = ((Element)root).getElementsByTagName(nodeName);
+		return nodes.getLength() > 0;
+	}
+	
+	
 	// get all subnodes with the given tag
 	public Vector<Node> findNodes(Node nodeRoot, String nodeName) throws ParseException {
 		org.w3c.dom.Node root = ((JavaNode)nodeRoot).getNode();
@@ -66,11 +75,14 @@ public class JavaXMLUtility implements XMLUtility {
 	
 	
 	// get all subnodes with the given tag
-	public Vector<Node> getChildNodes(Node nodeRoot) {
+	public Vector<Node> getChildElements(Node nodeRoot) {
 		org.w3c.dom.Node root = ((JavaNode)nodeRoot).getNode();
 		NodeList children = root.getChildNodes();
 		Vector<Node> v = new Vector<Node>();
-		for (int i = 0; i < children.getLength(); ++i) v.add(new JavaNode(children.item(i)));
+		for (int i = 0; i < children.getLength(); ++i) {
+			if (children.item(i).getNodeType() == org.w3c.dom.Node.ELEMENT_NODE)
+				v.add(new JavaNode(children.item(i)));
+		}
 		return v;
 	}
 	

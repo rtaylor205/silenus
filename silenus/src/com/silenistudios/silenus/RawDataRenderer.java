@@ -4,6 +4,9 @@ import java.util.Set;
 import java.util.Vector;
 
 import com.silenistudios.silenus.dom.Bitmap;
+import com.silenistudios.silenus.dom.FillStyle;
+import com.silenistudios.silenus.dom.Path;
+import com.silenistudios.silenus.dom.StrokeStyle;
 import com.silenistudios.silenus.dom.Timeline;
 import com.silenistudios.silenus.raw.AnimationBitmapData;
 import com.silenistudios.silenus.raw.AnimationData;
@@ -84,7 +87,7 @@ public class RawDataRenderer implements RenderInterface {
 
 	@Override
 	public void translate(double x, double y) {
-		fTransformationMatrix = TransformationMatrix.compose(fTransformationMatrix, new TransformationMatrix(x, y, 1.0, 1.0, 0.0));
+		fTransformationMatrix = TransformationMatrix.compose(fTransformationMatrix, new TransformationMatrix(Math.floor(x), Math.floor(y), 1.0, 1.0, 0.0));
 	}
 
 	@Override
@@ -102,6 +105,32 @@ public class RawDataRenderer implements RenderInterface {
 	public void drawImage(Bitmap img, ColorManipulation colorManipulation) {
 		drawImage(img);
 		fBitmapData.setColorManipulation(colorManipulation);
+	}
+	
+	@Override
+	public void drawPath(Path path) {
+		// TODO
+	}
+
+
+	@Override
+	public void fill(FillStyle fillStyle) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void stroke(StrokeStyle strokeStyle) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void transform(double m00, double m01, double m10, double m11, double tx, double ty) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
