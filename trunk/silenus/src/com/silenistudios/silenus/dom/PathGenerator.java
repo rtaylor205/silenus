@@ -28,12 +28,10 @@ public class PathGenerator {
 	Vector<Path> fStrokePaths = new Vector<Path>();
 	
 	// open paths - paths that still have to be closed
-	List<Path>[] fOpenPaths = new List[2];
+	List<Path> fOpenPaths = new LinkedList<Path>();
 	
 	// constructor
 	public PathGenerator() {
-		fOpenPaths[0] = new LinkedList<Path>();
-		fOpenPaths[1] = new LinkedList<Path>();
 	}
 	
 	
@@ -49,161 +47,109 @@ public class PathGenerator {
 			// get points of this edge
 			Vector<Point> points = getPoints(XMLUtility, edge);
 			System.out.println(points.size());
-			System.out.print(points.get(0));
-			for (int i = 1; i < points.size(); i += 2) {
-				System.out.print(" -> " + points.get(i));
+			for (int i = 0; i < points.size(); i += 2) {
+				System.out.print("[ " + points.get(i) + " -> " + points.get(i+1) + " ] ");
 			}
 			System.out.println();
-			// get the different types
-			fillTypes[0] = XMLUtility.getIntAttribute(edge, "fillStyle0", -1);
-			fillTypes[1] = XMLUtility.getIntAttribute(edge, "fillStyle1", -1);
-			int strokeType = XMLUtility.getIntAttribute(edge, "strokeStyle", -1);
 			
 			// walk over all lines in this edge and try to match them with the diffent open paths
 			for (int i = 0; i < points.size(); i += 2) {
 				
-				// the two points
-				Point p1 = points.get(i);
-				Point p2 = points.get(i+1);
-				
+				// get the different types
+				fillTypes[0] = XMLUtility.getIntAttribute(edge, "fillStyle0", -1);
+				fillTypes[1] = XMLUtility.getIntAttribute(edge, "fillStyle1", -1);
+				int strokeType = XMLUtility.getIntAttribute(edge, "strokeStyle", -1);
+				System.out.println("next " + i + "...");
 				// we simply add the stroke paths
 				if (strokeType != -1) {
 					Path path = new Path(strokeType);
-					path.add(p1); path.add(p2);
+					path.add(points.get(i)); path.add(points.get(i+1));
 					fStrokePaths.add(path);
-					System.out.println("Open paths: " + fOpenPaths[0].size() + "," + fOpenPaths[1].size());
+					System.out.println("Open paths: " + fOpenPaths.size());
 				}
+				
+				
+				// the connections with other paths
+				Path[][] connections = new Path[][]{new Path[]{null, null}, new Path[]{null, null}};
 				
 				// we consider all open paths
 				for (int fillType = 0; fillType < 2; ++fillType) {
 					
-					// walk over all fillType0 paths
-					Iterator<Path> pathIterator = fOpenPaths[fillType].iterator();
-					Path prevPath = null;
+					// no match
+					if (fillTypes[fillType] == -1) continue;
+					
+					System.out.println("fill type " + fillType);
+					// walk over all fillType paths
+					Iterator<Path> pathIterator = fOpenPaths.iterator();
+					
+					// the two points - inverted if the fillType is 1
+					Point p1 = points.get(i + fillType);
+					Point p2 = points.get(i + 1-fillType);
+					System.out.println(p1 + " -> " + p2);
 					while (pathIterator.hasNext()) {
+						
+						// which side of the path was matched by this open?
 						Path open = pathIterator.next();
 						
-						// we connect at the end of this path
-						if (fillTypes[fillType] != -1  && fillTypes[fillType] == open.getIndex() && open.getLastPoint().equals(points.firstElement())) {
+						// already connected to this path - skip
+						boolean alreadyConnected = false;
+						for (int k = 0; k < 4; ++k) {
+							if (open.equals(connections[k/2][k%2])) alreadyConnected = true;
+						}
+						if (alreadyConnected) continue;
+						
+						// open connects at the start of this path
+						if (connections[fillType][0] == null && fillTypes[fillType] == open.getIndex() && open.getLastPoint().equals(p1)) {
 							System.out.println("A Found standard append match at end of " + open.getLastPoint());
-							for (int i = 1; i < points.size(); i += 2) open.getPoints().add(points.get(i));
-							fillTypes[fillType] = -1;
+							open.add(p2);
+							connections[fillType][0] = open;
 						}
 						
-						// we connect at the start of this path
-						else if (fillTypes[fillType] != -1 && fillTypes[fillType] == open.getIndex() && open.getFirstPoint().equals(points.lastElement())) {
+						// open connects at the end of this path
+						else if (connections[fillType][1] == null && fillTypes[fillType] == open.getIndex() && open.getFirstPoint().equals(p2)) {
 							System.out.println("B Found standard prepend match at start of " + open.getFirstPoint());
-							for (int i = points.size()-2; i >= 0; i -= 2) open.add(0, points.get(i));
-							fillTypes[fillType] = -1;
+							open.add(0, p1);
+							connections[fillType][1] = open;
 						}
 						
-						// we connect at the end of this path, but in the wrong direction
-						else if (fillTypes[1-fillType] != -1 && fillTypes[1-fillType] == open.getIndex() && open.getLastPoint().equals(points.lastElement())) {
-							System.out.println("C Found inverse append at end of " + open.getLastPoint());
-							for (int i = points.size()-2; i >= 0; i -= 2) open.add(points.get(i));
-							fillTypes[1-fillType] = -1;
-						}
-						
-						// we connect at the start of this path, but in the wrong direction
-						else if (fillTypes[1-fillType] != -1 && fillTypes[1-fillType] == open.getIndex() && open.getFirstPoint().equals(points.firstElement())) {
-							System.out.println("D Found inverse prepend match at start of " + open.getFirstPoint());
-							for (int i = 1; i < points.size(); i += 2) open.add(0, points.get(i));
-							fillTypes[1-fillType] = -1;
-						}
-						
-						// no match :(
-						else open = null;
-						
-						// we got a match - see if we have to merge multiple paths
-						if (open != null && prevPath != null)  {
-							
-							// open follows prevPath in the right direction
-							if (prevPath.getLastPoint().equals(open.getFirstPoint())) {
-								
-								Iterator<Point> it = open.getPoints().iterator();
-								it.next();
-								while (it.hasNext()) prevPath.add(it.next());
-								pathIterator.remove();
-								open = prevPath;
-							}
-							
-							// open follows prevPath in the wrong direction
-							else if (prevPath.getLastPoint().equals(open.getLastPoint())) {
-								System.out.println("B Match found between paths:");
-								for (Point p : prevPath.getPoints()) System.out.print(p.toString() + " ");
-								System.out.println();
-								for (Point p : open.getPoints()) System.out.print(p.toString() + " ");
-								System.out.println();
-								ListIterator<Point> it = open.getPoints().listIterator(open.getPoints().size()-1);
-								it.previous();
-								while (it.hasPrevious()) prevPath.add(it.previous());
-								pathIterator.remove();
-								open = prevPath;
-							}
-							
-							// prevPath follows open in the right direction
-							else if (prevPath.getFirstPoint().equals(open.getLastPoint())) {
-								ListIterator<Point> it = open.getPoints().listIterator(open.getPoints().size()-1);
-								it.previous();
-								while (it.hasPrevious()) prevPath.add(0, it.previous());
-								pathIterator.remove();
-								open = prevPath;
-							}
-							
-							// prevPath follows open in the wrong direction
-							else if (prevPath.getFirstPoint().equals(open.getFirstPoint())) {
-								Iterator<Point> it = open.getPoints().iterator();
-								it.next();
-								while (it.hasNext()) prevPath.add(0, it.next());
-								pathIterator.remove();
-								open = prevPath;
-							}
-						}
-						
-						// no previous match was found - this is the first one
-						//else if (open != null) prevPath = open;
-						
-						// we closed the path with this additional segment - move to closed paths
-						if (open != null && open.isClosed()) {
+						// found - are we closed?
+						if ((open.equals(connections[fillType][0]) || open.equals(connections[fillType][1])) &&  open.isClosed()) {
 							pathIterator.remove();
 							fFillPaths.add(open);
 							System.out.println("added closed path");
 						}
 						
-						// not closed
-						else if (open != null) prevPath = open;
+						// shortcut - we are done here
+						if (connections[fillType][0] != null && connections[fillType][1] != null)  break;
+					}
+					
+					// we connected on both ends of this fill type - we merge the two paths
+					if (connections[fillType][0] != null && connections[fillType][1] != null)  {
+						
+						Iterator<Point> it = connections[fillType][1].getPoints().iterator();
+						it.next(); it.next();
+						while (it.hasNext()) connections[fillType][0].add(it.next());
+					
+						// done - remove connections[1]
+						fOpenPaths.remove(connections[fillType][1]);
 					}
 				}
 				
 				// we haven't connected - add an open path
 				for (int fillType = 0; fillType < 2; ++fillType) {
-					if (fillTypes[fillType] != -1) {
-						System.out.println("added open path for " + fillType);
+					if (fillTypes[0] != -1 && connections[fillType][0] == null && connections[fillType][1] == null) {
 						Path path = new Path(fillTypes[fillType]);
-						path.add(points.get(0));
-						for (int i = 1; i < points.size(); i += 2) path.add(points.get(i));
-						fOpenPaths[fillType].add(path);
-					}
-				}
-				
-				// cycle through all remaining open paths and make sure they're really still open (shouldn't really happen :( )
-				for (int fillType = 0; fillType < 2; ++fillType) {
-					for (Path path : fOpenPaths[fillType]) {
-						if (path.isClosed()) fFillPaths.add(path);
+						path.add(points.get(i + fillType));
+						path.add(points.get(i + 1-fillType));
+						fOpenPaths.add(path);
 					}
 				}
 			}
 			
-			
-			/**
-			 * 
-			 * 
-			 * NOTE
-			 * 
-			 * 
-			 * TODO
-			 * strokes volgen niet altijd op elkaar qua lijnen!!! fills uiteraard wel :)
-			 */
+			// cycle through all remaining open paths and make sure they're really still open (shouldn't really happen :( )
+			/*for (Path path : fOpenPaths) {
+				if (path.isClosed()) fFillPaths.add(path);
+			}*/
 		}
 	}
 	
@@ -254,7 +200,7 @@ public class PathGenerator {
 	// get fill paths
 	public Vector<Path> getFillPaths() {
 		System.out.println("Number of fill paths: " + fFillPaths.size());
-		System.out.println("Number of open paths: " + fOpenPaths[0].size() + fOpenPaths[1].size());
+		System.out.println("Number of open paths: " + fOpenPaths.size());
 		return fFillPaths;
 	}
 }
