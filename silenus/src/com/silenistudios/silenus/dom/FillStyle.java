@@ -41,4 +41,14 @@ public class FillStyle {
 	public int getIndex() {
 		return fIndex;
 	}
+	
+	
+	// to json
+	public String getJSON() {
+		StringBuilder ss = new StringBuilder();
+		ss.append("{");
+		ss.append("\"color\":" + fColor.getJSON());
+		ss.append("}");
+		return ss.toString();
+	}
 }

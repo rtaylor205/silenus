@@ -1,8 +1,11 @@
 package com.silenistudios.silenus;
 
+import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
 import java.io.File;
@@ -19,10 +22,18 @@ import javax.swing.JPanel;
 import com.silenistudios.silenus.RawDataRenderer;
 import com.silenistudios.silenus.XFLDocument;
 import com.silenistudios.silenus.dom.Bitmap;
+import com.silenistudios.silenus.dom.Color;
+import com.silenistudios.silenus.dom.FillStyle;
+import com.silenistudios.silenus.dom.Path;
+import com.silenistudios.silenus.dom.Point;
+import com.silenistudios.silenus.dom.StrokeStyle;
 import com.silenistudios.silenus.dom.Timeline;
 import com.silenistudios.silenus.raw.AnimationBitmapData;
 import com.silenistudios.silenus.raw.AnimationData;
+import com.silenistudios.silenus.raw.AnimationFrameData;
 import com.silenistudios.silenus.raw.ColorManipulation;
+import com.silenistudios.silenus.raw.FillData;
+import com.silenistudios.silenus.raw.StrokeData;
 import com.silenistudios.silenus.raw.TransformationMatrix;
 
 public class RawJavaRenderer extends JPanel {
@@ -41,6 +52,9 @@ public class RawJavaRenderer extends JPanel {
 	
 	// surface
 	Graphics2D fSurface;
+	
+	// path
+	GeneralPath fPath;
 	
 	
 	// constructor
@@ -89,7 +103,10 @@ public class RawJavaRenderer extends JPanel {
 		fSurface = (Graphics2D)g;
 		
 		// get the current frame
-		Vector<AnimationBitmapData> bitmaps = fAnimation.getFrameData(fFrame);
+		AnimationFrameData frame = fAnimation.getFrameData(fFrame);
+		
+		// draw bitmaps
+		Vector<AnimationBitmapData> bitmaps = frame.getBitmapData();
 		for (AnimationBitmapData bitmap : bitmaps) {
 			
 			// perform the correct transformation
@@ -105,6 +122,47 @@ public class RawJavaRenderer extends JPanel {
 			else {
 				drawImage(bitmap.getBitmap());
 			}
+			
+			// invert back to original case
+			rotate(-m.getRotation());
+			scale(1.0 / m.getScaleX(), 1.0 / m.getScaleY());
+			translate(-m.getTranslateX(), -m.getTranslateY());
+		}
+		
+		// draw fills
+		Vector<FillData> fills = frame.getFills();
+		for (FillData fill : fills) {
+			
+			// perform the correct transformation
+			TransformationMatrix m = fill.getTransformationMatrix();
+			translate(m.getTranslateX(), m.getTranslateY());
+			scale(m.getScaleX(), m.getScaleY());
+			rotate(m.getRotation());
+			
+			// draw fill
+			drawPath(fill.getPath());
+			fill(fill.getStyle());
+			
+			// invert back to original case
+			rotate(-m.getRotation());
+			scale(1.0 / m.getScaleX(), 1.0 / m.getScaleY());
+			translate(-m.getTranslateX(), -m.getTranslateY());
+		}
+		
+		
+		// draw strokes
+		Vector<StrokeData> strokes = frame.getStrokes();
+		for (StrokeData stroke : strokes) {
+			
+			// perform the correct transformation
+			TransformationMatrix m = stroke.getTransformationMatrix();
+			translate(m.getTranslateX(), m.getTranslateY());
+			scale(m.getScaleX(), m.getScaleY());
+			rotate(m.getRotation());
+			
+			// draw fill
+			drawPath(stroke.getPath());
+			stroke(stroke.getStyle());
 			
 			// invert back to original case
 			rotate(-m.getRotation());
@@ -166,5 +224,36 @@ public class RawJavaRenderer extends JPanel {
 		
 		// draw
 		fSurface.drawImage(out, new AffineTransform(1f,0f,0f,1f,0,0), null);
+	}
+	
+	
+	public void drawPath(Path path) {
+		fPath = new GeneralPath();
+		boolean first = true;
+		for (Point p : path.getPoints()) {
+			if (first) {
+				fPath.moveTo(p.getX(), p.getY());
+				first = false;
+			}
+			else fPath.lineTo(p.getX(), p.getY());
+		}
+	}
+
+	
+	public void fill(FillStyle fillStyle) {
+		Color color = fillStyle.getColor();
+		Paint paint = new java.awt.Color(color.getRed(), color.getGreen(), color.getBlue(), (int)(color.getAlpha() * 255));
+		fSurface.setPaint(paint);
+		fPath.closePath();
+		fSurface.fill(fPath);
+	}
+	
+	
+	public void stroke(StrokeStyle strokeStyle) {
+		Color color = strokeStyle.getColor();
+		Paint paint = new java.awt.Color(color.getRed(), color.getGreen(), color.getBlue(), (int)(color.getAlpha() * 255));
+		fSurface.setStroke(new BasicStroke((float)strokeStyle.getWeight()));
+		fSurface.setPaint(paint);
+		fSurface.draw(fPath);
 	}
 }

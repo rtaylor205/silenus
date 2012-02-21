@@ -50,9 +50,6 @@ public class PathGenerator {
 			
 			// get points of this edge
 			Vector<Point> points = getPoints(XMLUtility, edge);
-			for (int i = 0; i < points.size(); i += 2) {
-				System.out.print("[ " + points.get(i) + " -> " + points.get(i+1) + " ] ");
-			}
 			
 			// walk over all lines in this edge and try to match them with the diffent open paths
 			for (int i = 0; i < points.size(); i += 2) {
@@ -206,7 +203,7 @@ public class PathGenerator {
 	// TODO what does the "[" that sometimes occurs instead of "|" mean?
 	// TODO sometimes letters come behind the numbers, such as "!895 -3557S1|134 -3366!134 -3366|135 -2925". What does it mean?
 	// TODO another weird construct appearing in the edges list: "!10214.5 2608.5[#27EC.6F #A5D.06 10226.5 2697.5"
-	private static Pattern LinePattern = Pattern.compile("([-]?[0-9]*[\\.]?[0-9]+)\\s+([-]?[0-9]*[\\.]?[0-9]+)[S]?[0-9]*[\\|\\[]{1}([-]?[0-9]*[\\.]?[0-9]+) ([-]?[0-9]*[\\.]?[0-9]+).*");
+	private static Pattern LinePattern = Pattern.compile("([-]?[0-9]*[\\.]?[0-9]+)\\s+([-]?[0-9]*[\\.]?[0-9]+)[S]?[0-9]*\\s*[\\|\\[]{1}\\s*([-]?[0-9]*[\\.]?[0-9]+)\\s+([-]?[0-9]*[\\.]?[0-9]+).*");
 	
 	
 	// get all the points in this edge

@@ -121,4 +121,21 @@ public class Path implements Comparable<Path> {
 			return ax > bx ? -1 : 1; // both between 0 and 180
 		}
 	}
+	
+	
+	// get JSON
+	public String getJSON() {
+		StringBuilder ss = new StringBuilder();
+		boolean first = true;
+		ss.append("{");
+		ss.append("\"points\":[");
+		for (Point p : fPoints) {
+			if (!first) ss.append(",");
+			else first = false;
+			ss.append(p.toString());
+		}
+		ss.append("]");
+		ss.append("}");
+		return ss.toString();
+	}
 }

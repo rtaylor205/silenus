@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import com.silenistudios.silenus.dom.Bitmap;
+import com.silenistudios.silenus.dom.Shape;
 
 /**
  * This data structure contains all points and locations for one animation (scene).
@@ -17,6 +18,9 @@ public class AnimationData implements Serializable {
 
 	// list of bitmaps used on this scene
 	Vector<Bitmap> fBitmaps = new Vector<Bitmap>();
+	
+	// list of shapes used
+	Vector<Shape> fShapes = new Vector<Shape>();
 	
 	// animation frames
 	AnimationFrameData[] fFrames;
@@ -63,9 +67,9 @@ public class AnimationData implements Serializable {
 	
 	
 	// get frame data
-	public Vector<AnimationBitmapData> getFrameData(int frameIndex) {
+	public AnimationFrameData getFrameData(int frameIndex) {
 		assert(0 <= frameIndex && frameIndex < fFrames.length);
-		return fFrames[frameIndex].getBitmapData();
+		return fFrames[frameIndex];
 	}
 	
 	

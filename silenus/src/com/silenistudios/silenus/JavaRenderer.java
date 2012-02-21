@@ -219,10 +219,10 @@ public class JavaRenderer extends JPanel implements RenderInterface {
 		fSurface.draw(fPath);
 	}
 
-	@Override
+	/*@Override
 	public void transform(double m00, double m01, double m10, double m11, double tx, double ty) {
 		fSurface.transform(new AffineTransform(m00, m01, m10, m11, tx, ty));
 		
-	}
+	}*/
 	
 }

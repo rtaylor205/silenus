@@ -150,4 +150,19 @@ public class Color {
 		.append(fAlpha).append(')')
 		.toString();
 	}
+	
+	
+	/**
+	 * Get JSON string of this color
+	 */
+	public String getJSON() {
+		StringBuilder ss = new StringBuilder();
+		ss.append("{");
+		ss.append("\"red\":").append(fRed).append(",");
+		ss.append("\"green\":").append(fGreen).append(",");
+		ss.append("\"blue\":").append(fBlue).append(",");
+		ss.append("\"alpha\":").append(fAlpha);
+		ss.append("}");
+		return ss.toString();
+	}
 }
