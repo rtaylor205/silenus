@@ -165,7 +165,10 @@ public class Keyframe {
 			// no custom ease - use acceleration value to set up the bezier curve
 			else {
 				int acceleration = XMLUtility.getIntAttribute(root,  "acceleration", 0);
-				fEaseCurve = new BezierCurve(acceleration);
+				
+				// note that the acceleration flips sign here - this is because apparently flash
+				// stores the acceleration value with the opposite sign displayed in the flash IDE
+				fEaseCurve = new BezierCurve(-acceleration);
 			}
 		}
 	}

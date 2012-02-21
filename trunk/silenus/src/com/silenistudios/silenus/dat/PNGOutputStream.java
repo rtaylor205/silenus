@@ -2,7 +2,6 @@ package com.silenistudios.silenus.dat;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.io.File;
 import java.io.IOException;
 
 import java.io.OutputStream;

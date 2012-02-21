@@ -6,7 +6,6 @@ import java.awt.Graphics2D;
 import java.awt.Composite;
 import java.awt.Paint;
 import java.awt.RenderingHints;
-import java.awt.Stroke;
 import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
@@ -18,9 +17,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
@@ -218,6 +214,7 @@ public class JavaRenderer extends JPanel implements RenderInterface {
 	public void stroke(StrokeStyle strokeStyle) {
 		Color color = strokeStyle.getColor();
 		Paint paint = new java.awt.Color(color.getRed(), color.getGreen(), color.getBlue(), (int)(color.getAlpha() * 255));
+		fSurface.setStroke(new BasicStroke((float)strokeStyle.getWeight()));
 		fSurface.setPaint(paint);
 		fSurface.draw(fPath);
 	}

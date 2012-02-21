@@ -140,6 +140,7 @@ public class Color {
 	/**
 	 * Convert to string for printing.
 	 */
+	@Override
 	public String toString() {
 		return new StringBuilder(21)
 		.append("rgba(")

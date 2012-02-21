@@ -5,11 +5,9 @@ import java.util.Stack;
 import java.util.Vector;
 
 import com.silenistudios.silenus.dom.BitmapInstance;
-import com.silenistudios.silenus.dom.Edge;
 import com.silenistudios.silenus.dom.Instance;
 import com.silenistudios.silenus.dom.Keyframe;
 import com.silenistudios.silenus.dom.Layer;
-import com.silenistudios.silenus.dom.Line;
 import com.silenistudios.silenus.dom.Path;
 import com.silenistudios.silenus.dom.Shape;
 import com.silenistudios.silenus.dom.SymbolInstance;
@@ -182,7 +180,16 @@ public class SceneRenderer {
 	private void transformInstance(Instance i1, Instance i2, double d, int frame) {
 		
 		/**
-		 * STEP 1: move from registration point to transformation point to perform our operations
+		 * STEP 1: compute scaling and rotation interpolation
+		 */
+		
+		/**
+		 * STEP 2: interpolate the transformation point and move there for scaling and rotation
+		 */
+		
+		
+		/**
+		 * STEP 1: interpolate the registration point by rotating it around the 
 		 */
 		// translate to the transformation point
 		// NOTE: this is actually not necessary, since this is contained within the transformation matrix itself
@@ -195,18 +202,40 @@ public class SceneRenderer {
 		
 		// normal tween animation
 		if (!i1.hasInBetweenMatrices()) {
-		
+			
+			
+			// interpolate scaling
+			double scaleX = interpolateValues(i1.getScaleX(), i2.getScaleX(), d);
+			double scaleY = interpolateValues(i1.getScaleY(), i2.getScaleY(), d);
+			
+			// interpolate rotation, and make sure we always rotate an angle smaller than 180° (shortest path)
+			double r1 = -i1.getRotation();
+			double r2 = -i2.getRotation();
+			if (Math.abs(r1-r2) > Math.PI) {
+				if (r1 < r2) r1 += 2 * Math.PI;
+				else r2 += 2 * Math.PI;
+			}
+			double rotation = interpolateValues(r1, r2, d);
+			
+			// perform linear interpolation between the two transformation points
+			// these points have already been placed, scaled and rotated in their "final" position
+			double translateX = interpolateValues(i1.getTransformationPointX(), i2.getTransformationPointX(), d);
+			double translateY = interpolateValues(i1.getTransformationPointY(), i2.getTransformationPointY(), d);
+			
+			// move to this position
+			fRenderer.translate(translateX, translateY);
+			
 			// translate to the correct location
-			fRenderer.translate(interpolateValues(i1.getTranslateX(), i2.getTranslateX(), d), interpolateValues(i1.getTranslateY(), i2.getTranslateY(), d));
+			//fRenderer.translate(interpolateValues(i1.getTranslateX(), i2.getTranslateX(), d), interpolateValues(i1.getTranslateY(), i2.getTranslateY(), d));
 			
 			// scale
-			fRenderer.scale(interpolateValues(i1.getScaleX(), i2.getScaleX(), d), interpolateValues(i1.getScaleY(), i2.getScaleY(), d));
-			//System.out.println("Scale: " + i1.getScaleX() + "," + i1.getScaleY());
+			fRenderer.scale(scaleX, scaleY);
+			
 			// rotate
-			fRenderer.rotate(interpolateValues(-i1.getRotation(), -i2.getRotation(), d));
-			/*TransformationMatrix m = i1.getTransformationMatrix();
-			fRenderer.transform(m.getMatrix()[0][0], m.getMatrix()[0][1], m.getMatrix()[1][0], m.getMatrix()[1][1], i1.getTranslateX(), i1.getTranslateY());
-			*/
+			fRenderer.rotate(rotation);
+			
+			// move back to registration point
+			fRenderer.translate(-i1.getRelativeTransformationPointX(), -i1.getRelativeTransformationPointY());
 		}
 		
 		/**

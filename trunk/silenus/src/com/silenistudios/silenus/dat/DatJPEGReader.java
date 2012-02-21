@@ -4,9 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-
 import com.silenistudios.silenus.StreamFactory;
 import com.silenistudios.silenus.ParseException;
 

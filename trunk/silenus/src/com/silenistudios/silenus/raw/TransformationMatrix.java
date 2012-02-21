@@ -75,6 +75,19 @@ public class TransformationMatrix implements Serializable {
 	}
 	
 	
+	// get the transformed x-value for a point
+	public double computeX(double x, double y) {
+		return getScaleX() * Math.cos(-getRotation()) * x - getScaleY() * Math.sin(-getRotation()) * y + fTranslateX;
+	}
+	
+	
+	// get the transformed y-value for a point
+	public double computeY(double x, double y) {
+		return getScaleX() * Math.sin(-getRotation()) * x  + getScaleY() * Math.cos(-getRotation()) * y + fTranslateY;
+	}
+	
+	
+	
 	// get matrix
 	public double[][] getMatrix() {
 		return fMatrix;
@@ -95,14 +108,13 @@ public class TransformationMatrix implements Serializable {
 	
 	// get x scale value
 	public double getScaleX() {
-		//return getRotation() * (fMatrix[0][0]*fMatrix[1][1] - fMatrix[0][1]*fMatrix[1][0]) / fMatrix[0][0];
-		return sign(fMatrix[0][0]) * Math.sqrt(fMatrix[0][0]*fMatrix[0][0] + fMatrix[0][1]*fMatrix[0][1]);
+		return Math.sqrt(fMatrix[0][0]*fMatrix[0][0] + fMatrix[0][1]*fMatrix[0][1]);
 	}
 	
 	
 	// get y scale
 	public double getScaleY() {
-		return sign(fMatrix[1][1]) * Math.sqrt(fMatrix[1][0]*fMatrix[1][0] + fMatrix[1][1]*fMatrix[1][1]);
+		return Math.sqrt(fMatrix[1][0]*fMatrix[1][0] + fMatrix[1][1]*fMatrix[1][1]);
 	}
 	
 	
@@ -121,7 +133,7 @@ public class TransformationMatrix implements Serializable {
 	
 	// get rotation
 	public double getRotation() {
-		return Math.atan2(fMatrix[1][0], fMatrix[1][1]);
+		return Math.atan2(fMatrix[1][0], fMatrix[0][0]);
 	}
 	
 	
@@ -160,5 +172,15 @@ public class TransformationMatrix implements Serializable {
 	@Override
 	public String toString() {
 		return "[" + fMatrix[0][0] + " " + fMatrix[0][1] + " ; " + fMatrix[1][0] + " " + fMatrix[1][1] + "] + [" + fTranslateX + " " + fTranslateY + "]";
+	}
+	
+	
+	// is this matrix flipped?
+	// TODO this computation actually works, but I still do not know how to correct scaleX, scaleY and rotation IF it is flipped
+	public boolean isFlipped() {
+		double r = Math.atan2(fMatrix[1][0], fMatrix[0][0]) - Math.atan2(fMatrix[1][1], fMatrix[0][1]);
+		if (r < Math.PI) r += 2 * Math.PI;
+		if (r > Math.PI) r -= 2 * Math.PI;
+		return r > 0.0;
 	}
 }
