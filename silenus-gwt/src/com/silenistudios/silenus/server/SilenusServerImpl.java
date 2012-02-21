@@ -148,9 +148,11 @@ public class SilenusServerImpl extends RemoteServiceServlet implements SilenusSe
 			return dto;
 		}
 		catch (IOException e) {
+			e.printStackTrace();
 			throw new ParseException("Failed to parse file. Maybe your FLA was not created with Adobe Flash CS5, or you didn't upload an FLA fila at all?");
 		}
 		catch (com.silenistudios.silenus.ParseException e) {
+			e.printStackTrace();
 			throw new ParseException("Failed to parse file. Maybe your FLA was not created with Adobe Flash CS5, or you didn't upload an FLA fila at all?");
 		}
 	}
@@ -180,7 +182,7 @@ public class SilenusServerImpl extends RemoteServiceServlet implements SilenusSe
 		// generate frames
 		for (int i = 0; i < animationLength; ++i) {
 			FrameDTO frame = new FrameDTO();
-			Vector<AnimationBitmapData> bitmapData = animation.getFrameData(i);
+			Vector<AnimationBitmapData> bitmapData = animation.getFrameData(i).getBitmapData();
 			frame.bitmaps = new BitmapDTO[bitmapData.size()];
 			
 			// generate the different bitmaps

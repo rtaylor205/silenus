@@ -242,7 +242,8 @@ public class Main implements EntryPoint, MainCallback {
 		// get the context
 		Context2d ctx = fCanvas.getContext2d();
 		ctx.clearRect(0,  0, fAnimation.width, fAnimation.height);
-		
+		ctx.save();
+		ctx.scale(0.6, 0.6);
 		// go over all images in the frame and render them
 		FrameDTO frame = fAnimation.frames[frameIndex];
 		for (int i = 0; i < frame.bitmaps.length; ++i) {
@@ -262,5 +263,6 @@ public class Main implements EntryPoint, MainCallback {
 			// done
 			ctx.restore();
 		}
+		ctx.restore();
 	}
 }
