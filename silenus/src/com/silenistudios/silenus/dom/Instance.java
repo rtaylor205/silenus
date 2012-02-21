@@ -136,15 +136,27 @@ public class Instance {
 	}
 	
 	
-	// get transformation x
-	public double getTransformationPointX() {
+	// get transformation x in scaled/rotated/translated form
+	public double getRelativeTransformationPointX() {
 		return fTransformationX;
 	}
 	
 	
-	// get transformation y
-	public double getTransformationPointY() {
+	// get transformation y in scaled/rotated/translated form
+	public double getRelativeTransformationPointY() {
 		return fTransformationY;
+	}
+	
+	
+	// get transformation x in scaled/rotated/translated form
+	public double getTransformationPointX() {
+		return fMatrix.computeX(fTransformationX, fTransformationY);
+	}
+	
+	
+	// get transformation y in scaled/rotated/translated form
+	public double getTransformationPointY() {
+		return fMatrix.computeY(fTransformationX, fTransformationY);
 	}
 	
 	

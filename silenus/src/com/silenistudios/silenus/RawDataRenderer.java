@@ -1,6 +1,5 @@
 package com.silenistudios.silenus;
 
-import java.util.Set;
 import java.util.Vector;
 
 import com.silenistudios.silenus.dom.Bitmap;

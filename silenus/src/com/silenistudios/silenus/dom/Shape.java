@@ -36,7 +36,7 @@ public class Shape extends Instance {
 		if (XMLUtility.hasNode(root, "fills")) {
 			Node node = XMLUtility.findNode(root,  "fills");
 			Vector<Node> fills = XMLUtility.findNodes(node, "FillStyle");
-			System.out.println(fills.size() + " fills");
+			
 			for (Node fillNode : fills) {
 				FillStyle style = new FillStyle(XMLUtility, fillNode);
 				fFillStyles.put(style.getIndex(), style);

@@ -1,7 +1,6 @@
 package com.silenistudios.silenus;
 
 import com.silenistudios.silenus.dom.Bitmap;
-import com.silenistudios.silenus.dom.Color;
 import com.silenistudios.silenus.dom.FillStyle;
 import com.silenistudios.silenus.dom.Path;
 import com.silenistudios.silenus.dom.StrokeStyle;

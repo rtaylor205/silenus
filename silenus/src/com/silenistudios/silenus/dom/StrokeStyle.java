@@ -17,7 +17,7 @@ public class StrokeStyle {
 	int fIndex;
 	
 	// color
-	Color fColor = new Color();
+	public Color fColor = new Color();
 	
 	// solid style
 	String fSolidStyle;
@@ -26,7 +26,12 @@ public class StrokeStyle {
 	String fStrokeType;
 	
 	// weight (width)
-	double fWeight;
+	public double fWeight;
+	
+	
+	public StrokeStyle() {
+		
+	}
 	
 	
 	// constructor

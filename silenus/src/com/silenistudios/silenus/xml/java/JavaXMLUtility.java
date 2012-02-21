@@ -28,6 +28,7 @@ import org.xml.sax.SAXException;
 public class JavaXMLUtility implements XMLUtility {
 	
 	// parse a document
+	@Override
 	public Node parseXML(StreamFactory streamFactory, String root, String fileName) throws ParseException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder;
@@ -45,6 +46,7 @@ public class JavaXMLUtility implements XMLUtility {
 	}
 	
 	// get the first element with a given tag
+	@Override
 	public Node findNode(Node nodeRoot, String nodeName) throws ParseException {
 		org.w3c.dom.Node root = ((JavaNode)nodeRoot).getNode();
 		if (root.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) throw new ParseException("XMLUtility: node " + nodeName + " is not an element");
@@ -55,6 +57,7 @@ public class JavaXMLUtility implements XMLUtility {
 	
 	
 	// is there a node with this name?
+	@Override
 	public boolean hasNode(Node nodeRoot, String nodeName) throws ParseException {
 		org.w3c.dom.Node root = ((JavaNode)nodeRoot).getNode();
 		if (root.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) throw new ParseException("XMLUtility: node " + nodeName + " is not an element");
@@ -64,6 +67,7 @@ public class JavaXMLUtility implements XMLUtility {
 	
 	
 	// get all subnodes with the given tag
+	@Override
 	public Vector<Node> findNodes(Node nodeRoot, String nodeName) throws ParseException {
 		org.w3c.dom.Node root = ((JavaNode)nodeRoot).getNode();
 		Vector<Node> v = new Vector<Node>();
@@ -75,6 +79,7 @@ public class JavaXMLUtility implements XMLUtility {
 	
 	
 	// get all subnodes with the given tag
+	@Override
 	public Vector<Node> getChildElements(Node nodeRoot) {
 		org.w3c.dom.Node root = ((JavaNode)nodeRoot).getNode();
 		NodeList children = root.getChildNodes();
@@ -88,6 +93,7 @@ public class JavaXMLUtility implements XMLUtility {
 	
 	
 	// does the node have this attribute?
+	@Override
 	public boolean hasAttribute(Node nodeRoot, String attributeName) {
 		org.w3c.dom.Node node = ((JavaNode)nodeRoot).getNode();
 		NamedNodeMap attributes = node.getAttributes();
@@ -96,6 +102,7 @@ public class JavaXMLUtility implements XMLUtility {
 	
 	
 	// get the attribute
+	@Override
 	public String getAttribute(Node nodeRoot, String attributeName) throws ParseException {
 		org.w3c.dom.Node node = ((JavaNode)nodeRoot).getNode();
 		NamedNodeMap attributes = node.getAttributes();
@@ -110,6 +117,7 @@ public class JavaXMLUtility implements XMLUtility {
 	private final static String[] TRUE_STRINGS = new String[]{"yes", "true", "1", "ok"};
 	
 	// get boolean attribute
+	@Override
 	public boolean getBooleanAttribute(Node node, String attributeName) throws ParseException {
 		String s = getAttribute(node, attributeName);
 		for (String match : TRUE_STRINGS) {
@@ -120,6 +128,7 @@ public class JavaXMLUtility implements XMLUtility {
 	
 	
 	// get double attribute
+	@Override
 	public double getDoubleAttribute(Node node, String attributeName) throws ParseException {
 		String s = getAttribute(node, attributeName);
 		return Double.parseDouble(s);
@@ -127,6 +136,7 @@ public class JavaXMLUtility implements XMLUtility {
 	
 	
 	// get int attribute
+	@Override
 	public int getIntAttribute(Node node, String attributeName) throws ParseException {
 		String s = getAttribute(node, attributeName);
 		return Integer.parseInt(s);
@@ -134,6 +144,7 @@ public class JavaXMLUtility implements XMLUtility {
 	
 	
 	// get string attribute with default value
+	@Override
 	public String getAttribute(Node node, String attributeName, String defaultValue) throws ParseException {
 		if (!hasAttribute(node, attributeName)) return defaultValue;
 		return getAttribute(node, attributeName);
@@ -141,6 +152,7 @@ public class JavaXMLUtility implements XMLUtility {
 	
 	
 	// get boolean attribute with default value
+	@Override
 	public boolean getBooleanAttribute(Node node, String attributeName, boolean defaultValue) throws ParseException {
 		if (!hasAttribute(node, attributeName)) return defaultValue;
 		return getBooleanAttribute(node, attributeName);
@@ -148,6 +160,7 @@ public class JavaXMLUtility implements XMLUtility {
 	
 	
 	// get double attribute with default value
+	@Override
 	public double getDoubleAttribute(Node node, String attributeName, double defaultValue) throws ParseException {
 		if (!hasAttribute(node, attributeName)) return defaultValue;
 		return getDoubleAttribute(node, attributeName);
@@ -155,6 +168,7 @@ public class JavaXMLUtility implements XMLUtility {
 	
 	
 	// get int attribute with default value
+	@Override
 	public int getIntAttribute(Node node, String attributeName, int defaultValue) throws ParseException {
 		if (!hasAttribute(node, attributeName)) return defaultValue;
 		return getIntAttribute(node, attributeName);

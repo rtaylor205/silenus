@@ -9,7 +9,6 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 
 import com.silenistudios.silenus.ParseException;
-import com.silenistudios.silenus.RawJavaRenderer;
 import com.silenistudios.silenus.XFLDocument;
 
 /**
@@ -22,9 +21,7 @@ public class Main {
 	public static void main(String[] args) {
 		
 		// if no argument is provided, we show the default example
-		String directoryName = "D:/cq3/silenus/examples/small";
-		//String directoryName = "D:/cq3/silenus/examples/earthimp/imp_animaties_CORRECT_03";
-		//String directoryName = "D:/cq3/silenus/examples/forestimp/anim_melee_10_noblur.fla";
+		String directoryName = "example";
 		if (args.length > 0) directoryName = args[0];
 		
 		

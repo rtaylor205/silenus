@@ -126,7 +126,7 @@ public class Bitmap implements Serializable {
 		}
 		catch (ParseException e) {
 			// failed to convert - no biggy, we continue
-			System.out.println("Failed to convert .dat file '" + fBinaryHref + "': " + e.getMessage());
+			//System.out.println("Failed to convert .dat file '" + fBinaryHref + "': " + e.getMessage());
 		}
 	}
 	

@@ -2,7 +2,6 @@ package com.silenistudios.silenus.memory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 /**
  * Input stream that reads its file data from a virtual file in memory.
