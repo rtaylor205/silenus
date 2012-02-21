@@ -5,6 +5,7 @@ import java.awt.Container;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+
 import javax.swing.JFrame;
 
 import com.silenistudios.silenus.ParseException;
