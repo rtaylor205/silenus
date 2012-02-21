@@ -84,4 +84,17 @@ public class StrokeStyle {
 	public double getWeight() {
 		return fWeight;
 	}
+	
+	
+	// to json
+	public String getJSON() {
+		StringBuilder ss = new StringBuilder();
+		ss.append("{");
+		ss.append("\"color\":" + fColor.getJSON()).append(",");
+		ss.append("\"solidStyle\":\"").append(fSolidStyle).append("\",");
+		ss.append("\"strokeType\":\"").append(fStrokeType).append("\",");
+		ss.append("\"weight\":").append(fWeight);
+		ss.append("}");
+		return ss.toString();
+	}
 }

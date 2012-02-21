@@ -34,7 +34,7 @@ public interface RenderInterface {
 	public void rotate(double theta);
 	
 	// apply transformation
-	public void transform(double m00, double m01, double m10, double m11, double tx, double ty);
+	//public void transform(double m00, double m01, double m10, double m11, double tx, double ty);
 	
 	// draw the provided image to the screen, so that the topleft of the image is in the current origin
 	// path is relative to the root of the xfl directory (where DOMDocument.xml resides)

@@ -11,6 +11,8 @@ import com.silenistudios.silenus.raw.AnimationBitmapData;
 import com.silenistudios.silenus.raw.AnimationData;
 import com.silenistudios.silenus.raw.AnimationFrameData;
 import com.silenistudios.silenus.raw.ColorManipulation;
+import com.silenistudios.silenus.raw.FillData;
+import com.silenistudios.silenus.raw.StrokeData;
 import com.silenistudios.silenus.raw.TransformationMatrix;
 
 /**
@@ -41,6 +43,9 @@ public class RawDataRenderer implements RenderInterface {
 	
 	// last animation bitmap data
 	AnimationBitmapData fBitmapData;
+	
+	// current path
+	Path fCurrentPath;
 	
 	
 	// render all data for a scene
@@ -108,28 +113,16 @@ public class RawDataRenderer implements RenderInterface {
 	
 	@Override
 	public void drawPath(Path path) {
-		// TODO
+		fCurrentPath = path;
 	}
-
-
+	
 	@Override
 	public void fill(FillStyle fillStyle) {
-		// TODO Auto-generated method stub
-		
+		fFrame.addFill(new FillData(fillStyle, fCurrentPath, fTransformationMatrix));
 	}
-
-
+	
 	@Override
 	public void stroke(StrokeStyle strokeStyle) {
-		// TODO Auto-generated method stub
-		
+		fFrame.addStroke(new StrokeData(strokeStyle, fCurrentPath, fTransformationMatrix));
 	}
-
-
-	@Override
-	public void transform(double m00, double m01, double m10, double m11, double tx, double ty) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

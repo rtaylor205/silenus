@@ -203,7 +203,6 @@ public class SceneRenderer {
 		// normal tween animation
 		if (!i1.hasInBetweenMatrices()) {
 			
-			
 			// interpolate scaling
 			double scaleX = interpolateValues(i1.getScaleX(), i2.getScaleX(), d);
 			double scaleY = interpolateValues(i1.getScaleY(), i2.getScaleY(), d);
