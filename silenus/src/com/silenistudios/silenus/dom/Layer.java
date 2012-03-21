@@ -53,14 +53,23 @@ public class Layer {
 		for (Node node : frames) {
 			Keyframe frame = new Keyframe(XMLUtility, library, node);
 			fKeyframes.add(frame);
-			if (frame.getIndex() > fMaxFrameIndex) fMaxFrameIndex = frame.getIndex();
-			if (frame.isIKTween() && frame.getIndex() + frame.getIKTweenDuration() - 1 > fMaxFrameIndex) {
+			
+			// IK tween - duration is tricky
+			if (frame.isIKTween() && frame.getIndex() + frame.getDuration() - 1 > fMaxFrameIndex) {
 				// note that we subtract 1 frame - this is because the IK duration is defined without a keyframe at the end,
 				// while normal tween animations have a keyframe at the end that is included through the max frame index
-				fMaxFrameIndex = frame.getIndex() + frame.getIKTweenDuration() - 1;
-				
+				fMaxFrameIndex = frame.getIndex() + frame.getDuration() - 1;
 			}
+			
+			// normal tween - update max frame index
+			else if (!frame.isIKTween() && frame.getIndex() + frame.getDuration() > fMaxFrameIndex) {
+				fMaxFrameIndex = frame.getIndex() + frame.getDuration();
+			}
+			
+			// set next key frame for the previous frame
+			if (fKeyframes.size() > 2) fKeyframes.get(fKeyframes.size()-2).setNextKeyframe(frame);
 		}
+		
 	}
 	
 	
@@ -99,5 +108,19 @@ public class Layer {
 	// get type
 	public String getAnimationType() {
 		return fAnimationType;
+	}
+	
+	
+	// get the keyframe for a corrected frame number - this number is first pulled through SymbolInstance.getCorrectFrame
+	// to account for the different loop types
+	public Keyframe getKeyframe(int correctedFrame) {
+		
+		// look among all keyframes for a match
+		for (Keyframe keyframe : fKeyframes) {
+			if (keyframe.getIndex() <= correctedFrame && correctedFrame < keyframe.getIndex() + keyframe.getDuration()) return keyframe;
+		}
+		
+		// no match found
+		return null;
 	}
 }
