@@ -49,7 +49,14 @@ public class PathGenerator {
 		for (Node edge : edges) {
 			
 			// get points of this edge
-			Vector<Point> points = getPoints(XMLUtility, edge);
+			Vector<Point> points = null;
+			try {
+				points = getPoints(XMLUtility, edge);
+			}
+			catch (ParseException e) {
+				// we really couldn't parse this line - we skip it
+				continue;
+			}
 			
 			// walk over all lines in this edge and try to match them with the diffent open paths
 			for (int i = 0; i < points.size(); i += 2) {

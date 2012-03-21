@@ -112,7 +112,7 @@ public class JavaRenderer extends JPanel implements RenderInterface {
 		clear(g);
 		fSurface = (Graphics2D)g;
 		fSurface.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-		fRenderer.render(fFrame % (fScene.getMaxFrameIndex()+1));
+		fRenderer.render(fFrame % fScene.getMaxFrameIndex());
 	}
 	
 	protected void clear(Graphics g) {

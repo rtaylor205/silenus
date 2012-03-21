@@ -47,10 +47,13 @@ public class Keyframe {
 	boolean fIsTween = false;
 	
 	// IK tween duration
-	int fIKTweenDuration = 0;
+	int fDuration;
 	
 	// IK Tree used for IK motion
 	IKTree fIKTree = null;
+	
+	// next key frame in the chain
+	Keyframe fNextKeyframe = null;
 	
 	
 	// load a keyframe
@@ -58,6 +61,9 @@ public class Keyframe {
 		
 		// get frame index
 		fIndex = XMLUtility.getIntAttribute(root, "index");
+		
+		// get duration
+		fDuration = XMLUtility.getIntAttribute(root,  "duration", 1);
 		
 		// is there a tween here?
 		fIsTween = XMLUtility.hasAttribute(root,  "tweenType");
@@ -71,7 +77,6 @@ public class Keyframe {
 			
 			// get duration of the animation
 			try {
-				fIKTweenDuration = XMLUtility.getIntAttribute(root,  "duration");
 				
 				// get the IK Tree
 				Node tree = XMLUtility.findNode(root, "IKTree");
@@ -227,12 +232,30 @@ public class Keyframe {
 	
 	// is this an IK tween?
 	public boolean isIKTween() {
-		return fIKTweenDuration > 0;
+		return fIKTree != null;
 	}
 	
 	
 	// get the duration
-	public int getIKTweenDuration() {
-		return fIKTweenDuration;
+	public int getDuration() {
+		return fDuration;
+	}
+	
+	
+	// set next keyframe
+	public void setNextKeyframe(Keyframe next) {
+		fNextKeyframe = next;
+	}
+	
+	
+	// is there a next keyframe?
+	public boolean hasNextKeyframe() {
+		return fNextKeyframe != null;
+	}
+	
+	
+	// get next keyframe
+	public Keyframe getNextKeyframe() {
+		return fNextKeyframe;
 	}
 }

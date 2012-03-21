@@ -48,54 +48,40 @@ public class SceneRenderer {
 		// draw the different layers in order
 		Vector<Layer> layers = fScene.getLayers();
 		for (Layer layer : layers) {
-			drawLayer(layer, frame);
+			drawLayer(layer, frame, frame);
 		}
 	}
 	
 	
 	// draw a layer
-	private void drawLayer(Layer layer, int frame) {
+	private void drawLayer(Layer layer, int frame, int correctedFrame) {
 		
-		// walk over all keyframes
-		Vector<Keyframe> frames = layer.getKeyframes();
-		for (int i = 0; i < frames.size(); ++i) {
-			
-			// get frame
-			Keyframe f1 = frames.get(i);
-			
-			// there's no next frame to interpolate with - don't do interpolation
-			if (i+1 >= frames.size()) {
-				interpolateFrames(f1, f1, frame);
-				return;
-			}
-			
-			// get the next frame and see if it's a fit
-			Keyframe f2 = frames.get(i+1);
-			if (f1.getIndex() <= frame && frame < f2.getIndex()) {
-				
-				// it's a fit, is there a tween here?
-				if (f1.isTween()) {
-					interpolateFrames(f1, f2, frame);
-				}
-				
-				// no tween, just draw the frame
-				else {
-					interpolateFrames(f1, f1, frame);
-				}
-				
-				// done!
-				return;
-			}
+		// get the appropriate keyframe for this "real frame", based on the loop type
+		Keyframe f1 = layer.getKeyframe(correctedFrame);
+		
+		// no frame available - don't draw anything!
+		if (f1 == null) {
+			return;
+		}
+		
+		// there is a next frame - interpolate
+		else if (f1.hasNextKeyframe() && f1.isTween()) {
+			interpolateFrames(f1, f1.getNextKeyframe(), frame, correctedFrame);
+		}
+		
+		// there is no next keyframe - just draw the first frame
+		else {
+			interpolateFrames(f1, f1, frame, correctedFrame);
 		}
 	}
 	
 	
 	// interpolate between two frames
-	private void interpolateFrames(Keyframe f1, Keyframe f2, int frame) {
+	private void interpolateFrames(Keyframe f1, Keyframe f2, int frame, int correctedFrame) {
 		
 		// compute the distance between the two, unless it's the same frame (aka, there is no tween)
 		double d = 0;
-		if (f1.getIndex() != f2.getIndex()) d = (double)(frame - f1.getIndex()) / (double)(f2.getIndex() - f1.getIndex());
+		if (f1.getIndex() != f2.getIndex()) d = (double)(correctedFrame - f1.getIndex()) / (double)(f2.getIndex() - f1.getIndex());
 		
 		// update d for ease
 		d = f1.computeEase(d);
@@ -111,7 +97,7 @@ public class SceneRenderer {
 			fRenderer.save();
 			
 			// move/scale/rotate to the correct position
-			transformInstance(i1, i2, d, frame);
+			transformInstance(i1, i2, d, correctedFrame);
 			
 			// render the image
 			// if there is color manipulation, we pass it on
@@ -140,13 +126,13 @@ public class SceneRenderer {
 			fRenderer.save();
 						
 			// move/scale/rotate to the correct position
-			transformInstance(i1, i2, d, frame);
+			transformInstance(i1, i2, d, correctedFrame);
 			
 			// render all sub-layers
 			Timeline timeline = i1.getGraphic().getTimeline();
 			Vector<Layer> layers = timeline.getLayers();
 			for (Layer layer : layers) {
-				drawLayer(layer, frame);
+				drawLayer(layer, frame, i1.getCorrectFrame(frame));
 			}
 			
 			// done
@@ -164,7 +150,7 @@ public class SceneRenderer {
 			fRenderer.save();
 						
 			// move/scale/rotate to the correct position
-			transformInstance(i1, i1, d, frame);
+			transformInstance(i1, i1, d, correctedFrame);
 			
 			// render the shape
 			renderShape(i1);

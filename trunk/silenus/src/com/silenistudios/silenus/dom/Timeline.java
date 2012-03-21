@@ -43,11 +43,8 @@ public class Timeline {
 			// create layer
 			Layer layer = new Layer(XMLUtility, library, node);
 			
-			// get all keyframes
-			Vector<Keyframe> frames = layer.getKeyframes();
-			for (Keyframe frame : frames) {
-				if (frame.getIndex() > fMaxFrameIndex) fMaxFrameIndex = frame.getIndex();
-			}
+			// update max frame index
+			if (layer.getMaxFrameIndex() > fMaxFrameIndex) fMaxFrameIndex = layer.getMaxFrameIndex();
 			
 			// add to list
 			fLayers.add(layer);
@@ -86,9 +83,7 @@ public class Timeline {
 	// get max frame index for all underlying layers
 	// note: no depth search is performed through the symbol tree, this also doesn't happen in flash
 	public int getMaxFrameIndex() {
-		int maxFrameIndex = 0;
-		for (Layer layer : fLayers) if (layer.getMaxFrameIndex() > maxFrameIndex) maxFrameIndex = layer.getMaxFrameIndex();
-		return maxFrameIndex;
+		return fMaxFrameIndex;
 	}
 	
 }
