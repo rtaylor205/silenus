@@ -142,7 +142,7 @@ public class JavaRenderer extends JPanel implements RenderInterface {
 
 	@Override
 	public void translate(double x, double y) {
-		fSurface.translate((int)x,  (int)y);
+		fSurface.translate(x, y);
 	}
 
 
