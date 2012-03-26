@@ -54,20 +54,11 @@ public class Layer {
 			Keyframe frame = new Keyframe(XMLUtility, library, node);
 			fKeyframes.add(frame);
 			
-			// IK tween - duration is tricky
-			if (frame.isIKTween() && frame.getIndex() + frame.getDuration() - 1 > fMaxFrameIndex) {
-				// note that we subtract 1 frame - this is because the IK duration is defined without a keyframe at the end,
-				// while normal tween animations have a keyframe at the end that is included through the max frame index
-				fMaxFrameIndex = frame.getIndex() + frame.getDuration() - 1;
-			}
-			
-			// normal tween - update max frame index
-			else if (!frame.isIKTween() && frame.getIndex() + frame.getDuration() > fMaxFrameIndex) {
-				fMaxFrameIndex = frame.getIndex() + frame.getDuration();
-			}
+			// note that we subtract 1 frame - this is because the frame itself is also counted in the duration!
+			fMaxFrameIndex = frame.getIndex() + frame.getDuration() - 1;
 			
 			// set next key frame for the previous frame
-			if (fKeyframes.size() > 2) fKeyframes.get(fKeyframes.size()-2).setNextKeyframe(frame);
+			if (fKeyframes.size() > 1) fKeyframes.get(fKeyframes.size()-2).setNextKeyframe(frame);
 		}
 		
 	}

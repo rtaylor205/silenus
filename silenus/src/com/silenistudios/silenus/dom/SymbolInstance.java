@@ -75,7 +75,7 @@ public class SymbolInstance extends Instance {
 		if (fLoopType == SymbolInstance.LoopType.PLAY_ONCE) return frame;
 		
 		// in loop mode, we take the mod of the frame to get to the appropriate keyframe
-		else if (fLoopType == SymbolInstance.LoopType.LOOP) return frame % maxFrameIndex;
+		else if (fLoopType == SymbolInstance.LoopType.LOOP) return frame % (maxFrameIndex+1);
 		
 		// in single frame mode, we always return the same frame, no matter what situation we're in
 		else return fFirstFrame;
