@@ -91,7 +91,7 @@ public class RawDataRenderer implements RenderInterface {
 
 	@Override
 	public void translate(double x, double y) {
-		fTransformationMatrix = TransformationMatrix.compose(fTransformationMatrix, new TransformationMatrix(Math.floor(x), Math.floor(y), 1.0, 1.0, 0.0));
+		fTransformationMatrix = TransformationMatrix.compose(fTransformationMatrix, new TransformationMatrix(x, y, 1.0, 1.0, 0.0));
 	}
 
 	@Override
