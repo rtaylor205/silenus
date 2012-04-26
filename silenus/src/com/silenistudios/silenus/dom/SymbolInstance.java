@@ -1,8 +1,13 @@
 package com.silenistudios.silenus.dom;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Vector;
+
 import com.silenistudios.silenus.xml.Node;
 
 import com.silenistudios.silenus.ParseException;
+import com.silenistudios.silenus.SceneRenderer;
 import com.silenistudios.silenus.XFLLibrary;
 import com.silenistudios.silenus.xml.XMLUtility;
 
@@ -79,5 +84,34 @@ public class SymbolInstance extends Instance {
 		
 		// in single frame mode, we always return the same frame, no matter what situation we're in
 		else return fFirstFrame;
+	}
+	
+	
+	// rendering a symbol instance means rendering the underlying layers
+	@Override
+	public void render(SceneRenderer renderer, int frame) {
+		
+		// render all sub-layers
+		Timeline timeline = getGraphic().getTimeline();
+		Vector<Layer> layers = timeline.getLayers();
+		for (Layer layer : layers) {
+			renderer.drawLayer(layer, frame, getCorrectFrame(frame), false);
+		}
+	}
+	
+	
+	// return all the bitmaps used by the underlying layers
+	@Override
+	public Set<Bitmap> getUsedImages() {
+		Set<Bitmap> v = new HashSet<Bitmap>();
+		v.addAll(getGraphic().getTimeline().getUsedImages());
+		return v;
+	}
+	
+	
+	// a symbol instance should never end have to return a JSON
+	@Override
+	public String getJSON() {
+		return "{}";
 	}
 }

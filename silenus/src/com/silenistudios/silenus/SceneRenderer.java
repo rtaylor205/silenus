@@ -8,9 +8,7 @@ import com.silenistudios.silenus.dom.BitmapInstance;
 import com.silenistudios.silenus.dom.Instance;
 import com.silenistudios.silenus.dom.Keyframe;
 import com.silenistudios.silenus.dom.Layer;
-import com.silenistudios.silenus.dom.Path;
-import com.silenistudios.silenus.dom.Shape;
-import com.silenistudios.silenus.dom.SymbolInstance;
+import com.silenistudios.silenus.dom.ShapeInstance;
 import com.silenistudios.silenus.dom.Timeline;
 import com.silenistudios.silenus.raw.ColorManipulation;
 import com.silenistudios.silenus.raw.TransformationMatrix;
@@ -35,6 +33,12 @@ public class SceneRenderer {
 	// stack of color manipulations - because they propagate through the symbol tree
 	Stack<ColorManipulation> fColorManipulationStack = new Stack<ColorManipulation>();
 	
+	// are we currently drawing masks?
+	boolean fMask = false;
+	
+	// are we currently drawing masked instances?
+	boolean fMasked = false;
+	
 	
 	// constructor
 	public SceneRenderer(Timeline scene, RenderInterface renderer) {
@@ -48,13 +52,19 @@ public class SceneRenderer {
 		// draw the different layers in order
 		Vector<Layer> layers = fScene.getLayers();
 		for (Layer layer : layers) {
-			drawLayer(layer, frame, frame);
+			drawLayer(layer, frame, frame, false);
 		}
 	}
 	
 	
 	// draw a layer
-	private void drawLayer(Layer layer, int frame, int correctedFrame) {
+	public void drawLayer(Layer layer, int frame, int correctedFrame, boolean drawMasked) {
+		
+		// this is a masked layer - skip drawing it directly
+		if (!drawMasked && layer.isMaskedLayer()) return;
+		
+		// this is a mask layer - we draw everything below this layer as a mask
+		if (layer.isMaskLayer()) fMask = true;
 		
 		// get the appropriate keyframe for this "real frame", based on the loop type
 		Keyframe f1 = layer.getKeyframe(correctedFrame);
@@ -73,6 +83,26 @@ public class SceneRenderer {
 		else {
 			interpolateFrames(f1, f1, frame, correctedFrame);
 		}
+		
+		// we drew the mask - now draw the actual masked layers
+		if (layer.isMaskLayer()) {
+			
+			// these layers shouldn't be masked
+			fMask = false;
+			fMasked = true;
+		}
+		
+		// draw children if we have any
+		Vector<Layer> children = layer.getChildLayers();
+		for (Layer child : children) {
+			drawLayer(child, frame, correctedFrame, true);
+		}
+		
+		// let the renderer know we're done masking
+		if (layer.isMaskLayer()) {
+			fMasked = false;
+			fRenderer.resetMask();
+		}
 	}
 	
 	
@@ -86,8 +116,31 @@ public class SceneRenderer {
 		// update d for ease
 		d = f1.computeEase(d);
 		
-		// walk over all bitmap instances
-		Collection<BitmapInstance> bitmapInstances = f1.getBitmapInstances();
+		// walk over all instances
+		Collection<Instance> instances = f1.getlInstances();
+		for (Instance i1 : instances) {
+			
+			// get the instance in the second frame
+			Instance i2 = f2.getInstance(i1.getLibraryItemName());
+			
+			// no instance found in second frame, or no tween - just tween between ourselves
+			if (i2 == null) i2 = i1;
+			
+			// save transformation matrix
+			fRenderer.save();
+			
+			// move/scale/rotate to the correct position
+			transformInstance(i1, i2, d, correctedFrame);
+			
+			// render the image
+			i1.render(this, frame);
+			
+			// done
+			resetInstance(i1, i2);
+			fRenderer.restore();
+		}
+		
+		/*Collection<BitmapInstance> bitmapInstances = f1.getBitmapInstances();
 		for (BitmapInstance i1 : bitmapInstances) {
 			
 			// get the instance in the second frame
@@ -100,14 +153,7 @@ public class SceneRenderer {
 			transformInstance(i1, i2, d, correctedFrame);
 			
 			// render the image
-			// if there is color manipulation, we pass it on
-			
-			if (fColorManipulationStack.empty()) {
-				fRenderer.drawImage(i1.getBitmap());
-			}
-			else {
-				fRenderer.drawImage(i1.getBitmap(), fColorManipulationStack.peek());
-			}
+			renderBitmap(i1);
 			
 			// done
 			resetInstance(i1, i2);
@@ -132,7 +178,7 @@ public class SceneRenderer {
 			Timeline timeline = i1.getGraphic().getTimeline();
 			Vector<Layer> layers = timeline.getLayers();
 			for (Layer layer : layers) {
-				drawLayer(layer, frame, i1.getCorrectFrame(frame));
+				drawLayer(layer, frame, i1.getCorrectFrame(frame), false);
 			}
 			
 			// done
@@ -148,7 +194,7 @@ public class SceneRenderer {
 			
 			// save transformation matrix
 			fRenderer.save();
-						
+			
 			// move/scale/rotate to the correct position
 			transformInstance(i1, i1, d, correctedFrame);
 			
@@ -158,7 +204,7 @@ public class SceneRenderer {
 			// done
 			resetInstance(i1, i1);
 			fRenderer.restore();
-		}
+		}*/
 	}
 	
 	
@@ -268,24 +314,24 @@ public class SceneRenderer {
 	}
 	
 	
+	// render the bitmap
+	public void renderBitmap(BitmapInstance bitmap) {
+		
+		// set color manipulation
+		if (!fColorManipulationStack.empty()) fRenderer.applyColorManipulation(fColorManipulationStack.peek());
+		
+		// draw the bitmap
+		bitmap.setMask(fMask);
+		bitmap.setMasked(fMasked);
+		fRenderer.drawBitmapInstance(bitmap);
+	}
+	
+	
 	// render a shape
-	private void renderShape(Shape shape) {
-		
-		// draw all the fill paths
-		Vector<Path> fillPaths = shape.getFillPaths();
-		for (Path path : fillPaths) {
-			fRenderer.drawPath(path);
-			fRenderer.fill(shape.getFillStyle(path.getIndex()));
-		}
-		
-		
-		// draw all the stroke paths
-		Vector<Path> strokePaths = shape.getStrokePaths();
-		for (Path path : strokePaths) {
-			fRenderer.drawPath(path);
-			fRenderer.stroke(shape.getStrokeStyle(path.getIndex()));
-		}
-		
+	public void renderShape(ShapeInstance shape) {
+		shape.setMask(fMask);
+		shape.setMasked(fMasked);
+		fRenderer.drawShapeInstance(shape);
 	}
 	
 	

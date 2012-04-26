@@ -8,8 +8,6 @@ import com.silenistudios.silenus.xml.XMLUtility;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -26,16 +24,10 @@ import com.silenistudios.silenus.xml.Node;
 public class Keyframe {
 	
 	// list of instances in this keyframe, mapped by their library name for quick access
-	Map<String, Instance> fInstances = new HashMap<String, Instance>();
+	Map<String, Instance> fInstancesByLibraryName = new HashMap<String, Instance>();
 	
-	// list of symbol instances in the right drawing order
-	List<SymbolInstance> fSymbolInstances = new LinkedList<SymbolInstance>();
-	
-	// list of bitmap instances in the right drawing order
-	List<BitmapInstance> fBitmapInstances = new LinkedList<BitmapInstance>();
-	
-	// shapes
-	List<Shape> fShapes = new LinkedList<Shape>();
+	// flat list of all instances
+	Vector<Instance> fInstances = new Vector<Instance>();
 	
 	// index
 	int fIndex;
@@ -83,10 +75,10 @@ public class Keyframe {
 				fIKTree = new IKTree(XMLUtility, tree);
 				
 				// get the list of in between matrices
-				Node frameList = XMLUtility.findNode(root, "betweenFrameMatrixList");
+				/*Node frameList = XMLUtility.findNode(root, "betweenFrameMatrixList");
 				Vector<Node> matrices = XMLUtility.findNodes(frameList, "Matrix");
 				inBetweenMatrices = new Vector<TransformationMatrix>();
-				for (Node node : matrices) inBetweenMatrices.add(new TransformationMatrix(XMLUtility, node));
+				for (Node node : matrices) inBetweenMatrices.add(new TransformationMatrix(XMLUtility, node));*/
 			}
 			catch (ParseException e) {
 				// invalid IK pose - we don't have betweenFrameMatrixList or duration, and
@@ -96,55 +88,11 @@ public class Keyframe {
 		}
 		
 		// get all instances
-		Node elements = XMLUtility.findNode(root,  "elements");
+		Node elements = XMLUtility.findNodeNonRecursive(root,  "elements");
 		Vector<Node> instances = XMLUtility.getChildElements(elements);
 		for (Node node : instances) {
-			
-			// one instance will be made
-			Instance instance;
-			
-			// if adding this fails, it means we found an invalid reference
-			try {
-			
-				// it's a bitmap instance
-				if (node.getNodeName().equals("DOMBitmapInstance")) {
-					instance = new BitmapInstance(XMLUtility, library, node, fIndex);
-					fBitmapInstances.add((BitmapInstance)instance);
-				}
-				
-				// it's a symbol instance
-				else if (node.getNodeName().equals("DOMSymbolInstance")) {
-					instance = new SymbolInstance(XMLUtility, library, node, fIndex);
-					fSymbolInstances.add((SymbolInstance)instance);
-				}
-				
-				// it's a shape
-				else if (node.getNodeName().equals("DOMShape")) {
-					instance = new Shape(XMLUtility, node, fIndex);
-					fShapes.add((Shape)instance);
-					
-				}
-				
-				// unknown instance - skip
-				else {
-					continue;
-				}
-				
-				// add to map
-				if (instance.getLibraryItemName().length() > 0) fInstances.put(instance.getLibraryItemName(), instance);
-				
-				// if there's in-between matrices, we add them to the instance
-				if (inBetweenMatrices != null) {
-					instance.setInBetweenMatrices(fIKTree.getTransformationMatrices(instance.getReferenceId()));
-				}
-			}
-			
-			catch (ParseException e) {
-				e.printStackTrace();
-				// invalid reference found - ignore it
-			}
+			addInstance(XMLUtility, library, node);
 		}
-		
 		
 		// motion tween
 		if (tweenType.equals("motion")) {
@@ -179,6 +127,60 @@ public class Keyframe {
 	}
 	
 	
+	// add an instance
+	private void addInstance(XMLUtility XMLUtility, XFLLibrary library, Node node) {
+		
+		// if adding this fails, it means we found an invalid reference
+		Instance instance = null;
+		try {
+		
+			// it's a bitmap instance
+			if (node.getNodeName().equals("DOMBitmapInstance")) {
+				instance = new BitmapInstance(XMLUtility, library, node, fIndex);
+			}
+			
+			// it's a symbol instance
+			else if (node.getNodeName().equals("DOMSymbolInstance")) {
+				instance = new SymbolInstance(XMLUtility, library, node, fIndex);
+			}
+			
+			// it's a shape
+			else if (node.getNodeName().equals("DOMShape")) {
+				instance = new ShapeInstance(XMLUtility, node, fIndex);
+			}
+			
+			// it's a group - just add the underlying members
+			else if (node.getNodeName().equals("DOMGroup")) {
+				Node members = XMLUtility.findNodeNonRecursive(node,  "members");
+				Vector<Node> instances = XMLUtility.getChildElements(members);
+				for (Node member : instances) {
+					addInstance(XMLUtility, library, member);
+				}
+			}
+			
+			// unknown instance - skip
+			if (instance == null) {
+				return;
+			}
+			
+			// add to list
+			fInstances.add(instance);
+			
+			// add to map
+			if (instance.getLibraryItemName().length() > 0) fInstancesByLibraryName.put(instance.getLibraryItemName(), instance);
+			
+			// if there's in-between matrices, we add them to the instance
+			if (fIKTree != null) {
+				instance.setInBetweenMatrices(fIKTree.getTransformationMatrices(instance.getReferenceId()));
+			}
+		}
+		catch (ParseException e) {
+			// ignore this object
+			return;
+		}
+	}
+	
+	
 	// is there a tween here?
 	public boolean isTween() {
 		return fIsTween;
@@ -192,26 +194,15 @@ public class Keyframe {
 	
 	
 	// get all symbol instances
-	public Collection<SymbolInstance> getSymbolInstances() {
-		return fSymbolInstances;
+	public Collection<Instance> getlInstances() {
+		return fInstances;
 	}
 	
-	
-	// get all bitmap instances
-	public Collection<BitmapInstance> getBitmapInstances() {
-		return fBitmapInstances;
-	}
-	
-	
-	// get all shapes
-	public Collection<Shape> getShapes() {
-		return fShapes;
-	}
 	
 	
 	// get an instance by library name
 	public Instance getInstance(String libraryItemName) {
-		return fInstances.get(libraryItemName);
+		return fInstancesByLibraryName.get(libraryItemName);
 	}
 	
 	
@@ -224,8 +215,7 @@ public class Keyframe {
 	// get all images used for animation in this timeline
 	Set<Bitmap> getUsedImages() {
 		Set<Bitmap> v = new HashSet<Bitmap>();
-		for (BitmapInstance bitmap : fBitmapInstances) v.add(bitmap.getBitmap());
-		for (SymbolInstance symbol : fSymbolInstances) v.addAll(symbol.getGraphic().getTimeline().getUsedImages());
+		for (Instance instance : fInstances) v.addAll(instance.getUsedImages());
 		return v;
 	}
 	

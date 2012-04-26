@@ -51,8 +51,19 @@ public class JavaXMLUtility implements XMLUtility {
 		org.w3c.dom.Node root = ((JavaNode)nodeRoot).getNode();
 		if (root.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) throw new ParseException("XMLUtility: node " + nodeName + " is not an element");
 		NodeList nodes = ((Element)root).getElementsByTagName(nodeName);
-		if (nodes.getLength() != 1) throw new ParseException("XMLUtility: " + nodeName + " not found");
+		if (nodes.getLength() != 1) throw new ParseException("XMLUtility: " + nodeName + " not found or too many found");
 		return new JavaNode(nodes.item(0));
+	}
+	
+	
+	// get the first element with a given tag, without searching recursively down the tree
+	@Override
+	public Node findNodeNonRecursive(Node nodeRoot, String nodeName) throws ParseException {
+		Vector<Node> children = getChildElements(nodeRoot);
+		for (Node child : children) {
+			if (child.getNodeName().equals(nodeName)) return child;
+		}
+		throw new ParseException("XMLUtility: " + nodeName + " not found");
 	}
 	
 	

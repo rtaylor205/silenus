@@ -3,6 +3,7 @@ package com.silenistudios.silenus.dom;
 import java.util.Vector;
 
 import com.silenistudios.silenus.ParseException;
+import com.silenistudios.silenus.dom.fillstyles.Color;
 import com.silenistudios.silenus.xml.Node;
 import com.silenistudios.silenus.xml.XMLUtility;
 
@@ -27,6 +28,12 @@ public class StrokeStyle {
 	
 	// weight (width)
 	public double fWeight;
+	
+	// caps setting
+	public String fCaps;
+	
+	// joints setting
+	public String fJoints;
 	
 	
 	public StrokeStyle() {
@@ -59,6 +66,12 @@ public class StrokeStyle {
 		
 		// get weight
 		fWeight = XMLUtility.getDoubleAttribute(stroke, "weight", 1.0);
+		
+		// get caps
+		fCaps = XMLUtility.getAttribute(stroke, "caps", "round");
+		
+		// get joints
+		fJoints = XMLUtility.getAttribute(stroke, "joints", "round");
 	}
 	
 	
@@ -90,10 +103,15 @@ public class StrokeStyle {
 	public String getJSON() {
 		StringBuilder ss = new StringBuilder();
 		ss.append("{");
-		ss.append("\"color\":" + fColor.getJSON()).append(",");
+		ss.append("\"red\":").append(getColor().getRed()).append(",");
+		ss.append("\"green\":").append(getColor().getGreen()).append(",");
+		ss.append("\"blue\":").append(getColor().getBlue()).append(",");
+		ss.append("\"alpha\":").append(getColor().getAlpha()).append(",");
 		ss.append("\"solidStyle\":\"").append(fSolidStyle).append("\",");
 		ss.append("\"strokeType\":\"").append(fStrokeType).append("\",");
-		ss.append("\"weight\":").append(fWeight);
+		ss.append("\"weight\":").append(fWeight).append(",");
+		ss.append("\"caps\":\"").append(fCaps).append("\",");
+		ss.append("\"joints\":\"").append(fJoints).append("\"");
 		ss.append("}");
 		return ss.toString();
 	}

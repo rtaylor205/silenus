@@ -1,9 +1,11 @@
 package com.silenistudios.silenus.dom;
 
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import com.silenistudios.silenus.ParseException;
+import com.silenistudios.silenus.SceneRenderer;
 import com.silenistudios.silenus.raw.ColorManipulation;
 import com.silenistudios.silenus.raw.TransformationMatrix;
 import com.silenistudios.silenus.xml.XMLUtility;
@@ -16,7 +18,7 @@ import com.silenistudios.silenus.xml.Node;
  * @author Karel
  *
  */
-public class Instance {
+public abstract class Instance {
 	
 	// transformation matrix
 	TransformationMatrix fMatrix = new TransformationMatrix();
@@ -28,6 +30,7 @@ public class Instance {
 	String fLibraryItemName;
 	
 	// there is color manipulation
+	// TODO does this really belong here in the base class, or is this one only applicable to BitmapInstances?
 	ColorManipulation fColorManipulation = null;
 	
 	// in-between matrices, these are set when IK pose tweening is used
@@ -38,6 +41,15 @@ public class Instance {
 	
 	// reference ID - only used for IK pose
 	String fReferenceId;
+	
+	// is this instance masked by previous masks?
+	// this is only set temporarily when we are in mask mode, to allow the renderers to take this into account
+	public boolean fMasked = false;
+	
+	
+	// is this instance a mask for later drawings?
+	// this is only set temporarily when we are in mask mode, to allow the renderers to take this into account
+	public boolean fMask = false;
 	
 	
 	// load an instance
@@ -72,7 +84,8 @@ public class Instance {
 		
 		// get matrix subnode
 		try {
-			Node matrix = XMLUtility.findNode(root, "Matrix");
+			Node matrixParent = XMLUtility.findNodeNonRecursive(root, "matrix");
+			Node matrix = XMLUtility.findNodeNonRecursive(matrixParent, "Matrix");
 			fMatrix = new TransformationMatrix(XMLUtility, matrix);
 		}
 		catch (ParseException e) {
@@ -197,8 +210,53 @@ public class Instance {
 	}
 	
 	
+	// set the library item name - can only be done by subclasses who don't have a library item name by themselves, and therefore
+	// generate one of their own
+	protected void setLibraryItemName(String name) {
+		fLibraryItemName = name;
+	}
+	
+	
 	// get max frame index for IK transformation
 	public int getMaxIKFrameIndex() {
 		return fFrameIndex + fInBetweenMatrices.size() - 1;
 	}
+	
+	
+	// set mask
+	public void setMask(boolean mask) {
+		fMask = mask;
+	}
+	
+	
+	// is this instance a mask for later rendering?
+	public boolean isMask() {
+		return fMask;
+	}
+	
+	
+	// set masked
+	public void setMasked(boolean masked) {
+		fMasked = masked;
+	}
+	
+	
+	// is this instance a mask for later rendering?
+	public boolean isMasked() {
+		return fMasked;
+	}
+	
+	
+	// render this instance
+	// this trick is used to recover the subclass without having to resort to enums
+	// this allows us to deal with all instances in the same way
+	public abstract void render(SceneRenderer renderer, int frame);
+	
+	
+	// get used instances
+	public abstract Set<Bitmap> getUsedImages();
+	
+	
+	// get JSON for the subclass
+	public abstract String getJSON();
 }

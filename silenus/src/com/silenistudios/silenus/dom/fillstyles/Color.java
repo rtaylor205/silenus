@@ -1,15 +1,17 @@
-package com.silenistudios.silenus.dom;
+package com.silenistudios.silenus.dom.fillstyles;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.silenistudios.silenus.ShapeRenderInterface;
+
 
 /**
- * A simple color object.
+ * A simple color object. Doubles as Paint, so that it can "render" itself using the ShapeRenderInterface.
  * @author Karel
  *
  */
-public class Color {
+public class Color implements Paint {
 	
 	// red
 	int fRed = 0;
@@ -155,14 +157,23 @@ public class Color {
 	/**
 	 * Get JSON string of this color
 	 */
+	@Override
 	public String getJSON() {
 		StringBuilder ss = new StringBuilder();
 		ss.append("{");
+		ss.append("\"type\":\"solidColor\",");
 		ss.append("\"red\":").append(fRed).append(",");
 		ss.append("\"green\":").append(fGreen).append(",");
 		ss.append("\"blue\":").append(fBlue).append(",");
 		ss.append("\"alpha\":").append(fAlpha);
 		ss.append("}");
 		return ss.toString();
+	}
+	
+	
+	// fill with a basic color
+	@Override
+	public void render(ShapeRenderInterface renderer) {
+		renderer.fillSolidColor(this);
 	}
 }
