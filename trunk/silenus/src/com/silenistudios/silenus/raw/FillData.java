@@ -1,8 +1,7 @@
 package com.silenistudios.silenus.raw;
 
-import com.silenistudios.silenus.dom.FillStyle;
 import com.silenistudios.silenus.dom.Path;
-import com.silenistudios.silenus.dom.StrokeStyle;
+import com.silenistudios.silenus.dom.fillstyles.FillStyle;
 
 /**
  * Contains data for drawing a fill shape.

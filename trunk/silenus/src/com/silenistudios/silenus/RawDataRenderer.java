@@ -2,17 +2,13 @@ package com.silenistudios.silenus;
 
 import java.util.Vector;
 
-import com.silenistudios.silenus.dom.Bitmap;
-import com.silenistudios.silenus.dom.FillStyle;
-import com.silenistudios.silenus.dom.Path;
-import com.silenistudios.silenus.dom.StrokeStyle;
+import com.silenistudios.silenus.dom.BitmapInstance;
+import com.silenistudios.silenus.dom.ShapeInstance;
 import com.silenistudios.silenus.dom.Timeline;
 import com.silenistudios.silenus.raw.AnimationBitmapData;
 import com.silenistudios.silenus.raw.AnimationData;
-import com.silenistudios.silenus.raw.AnimationFrameData;
+import com.silenistudios.silenus.raw.AnimationShapeData;
 import com.silenistudios.silenus.raw.ColorManipulation;
-import com.silenistudios.silenus.raw.FillData;
-import com.silenistudios.silenus.raw.StrokeData;
 import com.silenistudios.silenus.raw.TransformationMatrix;
 
 /**
@@ -32,20 +28,16 @@ public class RawDataRenderer implements RenderInterface {
 	// animation data
 	AnimationData fData;
 	
-	// cuirrent frame data
-	AnimationFrameData fFrame;
-	
 	// trandformation matrix stack
 	Vector<TransformationMatrix> fTransformationStack = new Vector<TransformationMatrix>();
 	
 	// current transformation matrix
 	TransformationMatrix fTransformationMatrix = new TransformationMatrix();
 	
-	// last animation bitmap data
-	AnimationBitmapData fBitmapData;
+	// current color transformation
+	ColorManipulation fColorManipulation = null;
 	
-	// current path
-	Path fCurrentPath;
+	// 
 	
 	
 	// render all data for a scene
@@ -53,16 +45,14 @@ public class RawDataRenderer implements RenderInterface {
 		
 		// create animation data
 		fData = new AnimationData(scene.getAnimationLength(), width, height, frameRate);
-		fData.setBitmaps(scene.getUsedImages());
 		
 		// create scene renderer
 		SceneRenderer renderer = new SceneRenderer(scene, this);
 		
 		// go over all frames and render them
 		for (int i = 0; i < scene.getAnimationLength(); ++i) {
-			fFrame = new AnimationFrameData();
 			renderer.render(i);
-			fData.setFrame(i, fFrame);
+			fData.setFrame(i);
 		}
 	}
 	
@@ -100,29 +90,27 @@ public class RawDataRenderer implements RenderInterface {
 	}
 
 	@Override
-	public void drawImage(Bitmap img) {
-		fBitmapData = new AnimationBitmapData(img, fTransformationMatrix);
-		fFrame.addBitmapData(fBitmapData);
+	public void drawBitmapInstance(BitmapInstance img) {
+		AnimationBitmapData bitmapData = new AnimationBitmapData(img, fTransformationMatrix, fColorManipulation);
+		fData.addInstance(bitmapData);
+		fColorManipulation = null;
 	}
 	
 	@Override
-	public void drawImage(Bitmap img, ColorManipulation colorManipulation) {
-		drawImage(img);
-		fBitmapData.setColorManipulation(colorManipulation);
+	public void drawShapeInstance(ShapeInstance shape) {
+		AnimationShapeData shapeData = new AnimationShapeData(shape, fTransformationMatrix);
+		fData.addInstance(shapeData);
 	}
-	
+
+
 	@Override
-	public void drawPath(Path path) {
-		fCurrentPath = path;
+	public void applyColorManipulation(ColorManipulation colorManipulation) {
+		fColorManipulation = colorManipulation;
 	}
-	
+
+
 	@Override
-	public void fill(FillStyle fillStyle) {
-		fFrame.addFill(new FillData(fillStyle, fCurrentPath, fTransformationMatrix));
-	}
-	
-	@Override
-	public void stroke(StrokeStyle strokeStyle) {
-		fFrame.addStroke(new StrokeData(strokeStyle, fCurrentPath, fTransformationMatrix));
+	public void resetMask() {
+		fData.resetMask();
 	}
 }

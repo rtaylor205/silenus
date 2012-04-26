@@ -1,9 +1,7 @@
 package com.silenistudios.silenus;
 
-import com.silenistudios.silenus.dom.Bitmap;
-import com.silenistudios.silenus.dom.FillStyle;
-import com.silenistudios.silenus.dom.Path;
-import com.silenistudios.silenus.dom.StrokeStyle;
+import com.silenistudios.silenus.dom.BitmapInstance;
+import com.silenistudios.silenus.dom.ShapeInstance;
 import com.silenistudios.silenus.raw.ColorManipulation;
 
 /**
@@ -33,25 +31,19 @@ public interface RenderInterface {
 	// rotate in counterclockwise direction, in radians
 	public void rotate(double theta);
 	
-	// apply transformation
-	//public void transform(double m00, double m01, double m10, double m11, double tx, double ty);
-	
-	// draw the provided image to the screen, so that the topleft of the image is in the current origin
-	// path is relative to the root of the xfl directory (where DOMDocument.xml resides)
-	public void drawImage(Bitmap img);
+	// apply color manipulation
+	// these are global operations to the color composition, that determine which channels of bitmaps are actually drawn
+	public void applyColorManipulation(ColorManipulation colorManipulation);
 	
 	// draw the provided image to the screen, so that the topleft of the image is in the current origin
 	// path is relative to the root of the xfl directory (where DOMDocument.xml resides)
 	// Before drawing the image, the data contained in ColorManipulation must be applied to the entire
 	// image.
-	public void drawImage(Bitmap img, ColorManipulation colorManipulation);
+	public void drawBitmapInstance(BitmapInstance img);
 	
-	// draw a path
-	public void drawPath(Path path);
+	// draw a shape.
+	public void drawShapeInstance(ShapeInstance shape);
 	
-	// fill the path with the given fill style
-	public void fill(FillStyle fillStyle);
-	
-	// stroke the path with the given stroke style
-	public void stroke(StrokeStyle strokeStyle);
+	// reset mask
+	public void resetMask();
 }

@@ -1,11 +1,11 @@
 package com.silenistudios.silenus.raw;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
-import com.silenistudios.silenus.dom.Bitmap;
-import com.silenistudios.silenus.dom.Shape;
+import com.silenistudios.silenus.dom.Instance;
 
 /**
  * This data structure contains all points and locations for one animation (scene).
@@ -15,15 +15,18 @@ import com.silenistudios.silenus.dom.Shape;
  */
 public class AnimationData implements Serializable {
 	private static final long serialVersionUID = 2283183510219011650L;
-
-	// list of bitmaps used on this scene
-	Vector<Bitmap> fBitmaps = new Vector<Bitmap>();
 	
-	// list of shapes used
-	Vector<Shape> fShapes = new Vector<Shape>();
+	// list of all instances used in this scene
+	Vector<Instance> fInstances = new Vector<Instance>();
+	
+	// convenient map for finding back the instances by library item name
+	Map<String, Integer> fLibraryItemNameToInstanceIndex = new HashMap<String, Integer>();
 	
 	// animation frames
 	AnimationFrameData[] fFrames;
+	
+	// current frame
+	int fCurrentFrame = 0;
 	
 	// length of the animation
 	int fAnimationLength;
@@ -37,6 +40,9 @@ public class AnimationData implements Serializable {
 	// frame rate
 	int fFrameRate;
 	
+	// current list of masks
+	Vector<Integer> fMasks = new Vector<Integer>();
+	
 	// constructor
 	public AnimationData(int animationLength, int width, int height, int frameRate) {
 		fAnimationLength = animationLength;
@@ -44,18 +50,51 @@ public class AnimationData implements Serializable {
 		fHeight = height;
 		fFrameRate = frameRate;
 		fFrames = new AnimationFrameData[fAnimationLength];
+		for (int i = 0; i < fAnimationLength; ++i) fFrames[i] = new AnimationFrameData();
 	}
 	
 	
-	// set bitmaps
-	public void setBitmaps(Set<Bitmap> bitmaps) {
-		for (Bitmap bitmap : bitmaps) fBitmaps.add(bitmap);
+	// add an instance to the current frame
+	public void addInstance(AnimationInstanceData data) {
+		
+		// add to the correct frame
+		int idx = fFrames[fCurrentFrame].addAnimationInstanceData(data);
+		
+		// see if we encounter this instance for the first time - if yes, add to the library
+		Instance instance = data.getInstance();
+		String libraryItemName = instance.getLibraryItemName();
+		
+		// is this a mask?
+		if (data.isMask()) {
+			fMasks.add(idx);
+		}
+		
+		
+		// is this instance masked?
+		if (data.isMasked()) {
+			data.setMasks(fMasks);
+		}
+		
+		// not yet in the library
+		if (!fLibraryItemNameToInstanceIndex.containsKey(libraryItemName)) {
+			fInstances.add(instance);
+			fLibraryItemNameToInstanceIndex.put(libraryItemName, fInstances.size()-1);
+		}
+		
+		// set the correct index
+		data.setIndex(fLibraryItemNameToInstanceIndex.get(libraryItemName));
 	}
 	
 	
-	// get bitmap paths
-	public Vector<Bitmap> getBitmaps() {
-		return fBitmaps;
+	// advance a frame
+	public void advanceFrame() {
+		++fCurrentFrame;
+	}
+	
+	
+	// set frame
+	public void setFrame(int frame) {
+		fCurrentFrame = frame;
 	}
 	
 	
@@ -97,6 +136,12 @@ public class AnimationData implements Serializable {
 	}
 	
 	
+	// reset mask
+	public void resetMask() {
+		fMasks.clear();
+	}
+	
+	
 	// export to json
 	public String getJSON() {
 		StringBuilder ss = new StringBuilder();
@@ -104,10 +149,11 @@ public class AnimationData implements Serializable {
 		ss.append("\"frameRate\":").append(fFrameRate).append(",");
 		ss.append("\"width\":").append(fWidth).append(",");
 		ss.append("\"height\":").append(fHeight).append(",");
-		ss.append("\"bitmaps\":[");
-		for (int i = 0; i < fBitmaps.size(); ++i) {
+		ss.append("\"instances\":[");
+		for (int i = 0; i < fInstances.size(); ++i) {
 			if (i != 0) ss.append(",");
-			ss.append("\"").append(fBitmaps.get(i).getSourceHref()).append("\"");
+			Instance instance = fInstances.get(i);
+			ss.append(instance.getJSON());
 		}
 		ss.append("],");
 		ss.append("\"frames\":[");

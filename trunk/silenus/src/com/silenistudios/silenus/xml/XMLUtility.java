@@ -18,14 +18,17 @@ public interface XMLUtility {
 	// parse a document and return the root node (typically the first child of the Document obtained!)
 	public Node parseXML(StreamFactory streamFactory, String root, String fileName) throws ParseException;
 	
-	// get the first element with a given tag
+	// get the first element with a given tag - this looks recursively down the tree
 	public Node findNode(Node root, String nodeName) throws ParseException;
+	
+	// find a node non-recursively
+	public Node findNodeNonRecursive(Node root, String nodeName) throws ParseException;
 	
 	// is there such a node?
 	public boolean hasNode(Node root, String nodeName) throws ParseException;
 	
 	
-	// get all subnodes with the given tag
+	// get all subnodes with the given tag - this looks recursively down the tree
 	public Vector<Node> findNodes(Node root, String nodeName) throws ParseException;
 	
 	// get all child elements - ignoring other types of nodes

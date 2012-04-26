@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Composite;
+import java.awt.LinearGradientPaint;
 import java.awt.Paint;
 import java.awt.RenderingHints;
 import java.awt.geom.*;
@@ -17,6 +18,8 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Vector;
+
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
@@ -24,12 +27,12 @@ import com.silenistudios.silenus.RenderInterface;
 import com.silenistudios.silenus.SceneRenderer;
 import com.silenistudios.silenus.XFLDocument;
 import com.silenistudios.silenus.dom.Bitmap;
-import com.silenistudios.silenus.dom.Color;
-import com.silenistudios.silenus.dom.FillStyle;
-import com.silenistudios.silenus.dom.Path;
-import com.silenistudios.silenus.dom.Point;
+import com.silenistudios.silenus.dom.BitmapInstance;
+import com.silenistudios.silenus.dom.ShapeInstance;
 import com.silenistudios.silenus.dom.StrokeStyle;
 import com.silenistudios.silenus.dom.Timeline;
+import com.silenistudios.silenus.dom.fillstyles.Color;
+import com.silenistudios.silenus.dom.fillstyles.ColorStop;
 import com.silenistudios.silenus.raw.ColorManipulation;
 
 /**
@@ -38,7 +41,7 @@ import com.silenistudios.silenus.raw.ColorManipulation;
  * @author Karel
  *
  */
-public class JavaRenderer extends JPanel implements RenderInterface {
+public class JavaRenderer extends JPanel implements RenderInterface, ShapeRenderInterface {
 	
 	// default serial number
 	private static final long serialVersionUID = 1L;
@@ -66,6 +69,10 @@ public class JavaRenderer extends JPanel implements RenderInterface {
 	
 	// general path
 	GeneralPath fPath;
+	
+	
+	// color manipulation
+	ColorManipulation fCurrentColorManipulation = null;
 	
 	
 	// constructor
@@ -112,7 +119,8 @@ public class JavaRenderer extends JPanel implements RenderInterface {
 		clear(g);
 		fSurface = (Graphics2D)g;
 		fSurface.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-		fRenderer.render(fFrame % fScene.getMaxFrameIndex());
+		if (fScene.getMaxFrameIndex() == 0) fRenderer.render(0);
+		else fRenderer.render(fFrame % fScene.getMaxFrameIndex());
 	}
 	
 	protected void clear(Graphics g) {
@@ -153,60 +161,93 @@ public class JavaRenderer extends JPanel implements RenderInterface {
 
 
 	@Override
-	public void drawImage(Bitmap bitmap) {
-		fSurface.drawImage(fImages.get(bitmap.getAbsolutePath()), new AffineTransform(1f,0f,0f,1f,0,0), null);
-	}
-	
-	
-	@Override
-	public void drawImage(Bitmap bitmap, ColorManipulation c) {
+	public void drawBitmapInstance(BitmapInstance instance) {
+		Bitmap bitmap = instance.getBitmap();
 		
-		// get the original image
-		BufferedImage img = fImages.get(bitmap.getAbsolutePath());
-		
-		// set up the rescale operation
-		RescaleOp rescaleOp = new RescaleOp(new float[]{
-				(float) c.getRedMultiplier(),
-				(float) c.getGreenMultiplier(),
-				(float) c.getBlueMultiplier(),
-				(float) c.getAlphaMultiplier()},	new float[]{
-				(float) c.getRedOffset(),
-				(float) c.getGreenOffset(), 
-				(float) c.getBlueOffset(), 
-				(float) c.getAlphaOffset()}, null);
-		
-		// copy to a buffered image
-		BufferedImage out = rescaleOp.createCompatibleDestImage(img, null);
-		
-		// apply filter
-		rescaleOp.filter(img, out);
-		
-		// draw
-		fSurface.drawImage(out, new AffineTransform(1f,0f,0f,1f,0,0), null);
-	}
-	
-	
-	@Override
-	public void drawPath(Path path) {
-		fPath = new GeneralPath();
-		boolean first = true;
-		for (Point p : path.getPoints()) {
-			if (first) {
-				fPath.moveTo(p.getX(), p.getY());
-				first = false;
-			}
-			else fPath.lineTo(p.getX(), p.getY());
+		// this is a mask - just draw the outline
+		if (instance.isMask()) {
+			moveTo(0, 0);
+			lineTo(bitmap.getWidth(), 0);
+			lineTo(bitmap.getWidth(), bitmap.getHeight());
+			lineTo(0, bitmap.getHeight());
+			lineTo(0, 0);
+			fillSolidColor(new Color(255, 0, 0));
+			return;
 		}
+		
+		// color manipulation
+		if (fCurrentColorManipulation != null) {
+			
+			// get the original image
+			BufferedImage img = fImages.get(bitmap.getAbsolutePath());
+			
+			// set up the rescale operation
+			RescaleOp rescaleOp = new RescaleOp(new float[]{
+					(float) fCurrentColorManipulation.getRedMultiplier(),
+					(float) fCurrentColorManipulation.getGreenMultiplier(),
+					(float) fCurrentColorManipulation.getBlueMultiplier(),
+					(float) fCurrentColorManipulation.getAlphaMultiplier()},	new float[]{
+					(float) fCurrentColorManipulation.getRedOffset(),
+					(float) fCurrentColorManipulation.getGreenOffset(), 
+					(float) fCurrentColorManipulation.getBlueOffset(), 
+					(float) fCurrentColorManipulation.getAlphaOffset()}, null);
+			
+			// copy to a buffered image
+			BufferedImage out = rescaleOp.createCompatibleDestImage(img, null);
+			
+			// apply filter
+			rescaleOp.filter(img, out);
+			
+			// draw
+			fSurface.drawImage(out, new AffineTransform(1f,0f,0f,1f,0,0), null);
+		}
+		
+		// no color manipulation
+		else {
+			fSurface.drawImage(fImages.get(bitmap.getAbsolutePath()), new AffineTransform(1f,0f,0f,1f,0,0), null);
+		}
+		
+		// only apply to one image
+		fCurrentColorManipulation = null;
+	}
+	
+	
+	@Override
+	public void drawShapeInstance(ShapeInstance shape) {
+		shape.render(this);
+	}
+	
+	
+	@Override
+	public void applyColorManipulation(ColorManipulation colorManipulation) {
+		fCurrentColorManipulation = colorManipulation;
 	}
 
 
 	@Override
-	public void fill(FillStyle fillStyle) {
-		Color color = fillStyle.getColor();
+	public void fillSolidColor(Color color) {
 		Paint paint = new java.awt.Color(color.getRed(), color.getGreen(), color.getBlue(), (int)(color.getAlpha() * 255));
 		fSurface.setPaint(paint);
 		fPath.closePath();
 		fSurface.fill(fPath);
+		fPath = null;
+	}
+	
+	
+	@Override
+	public void fillLinearGradient(double startX, double startY, double stopX, double stopY, Vector<ColorStop> colorStops) {
+		float[] fractions = new float[colorStops.size()];
+		java.awt.Color[] colors = new java.awt.Color[colorStops.size()];
+		for (int i = 0; i < colorStops.size(); ++i) {
+			fractions[i] = (float)colorStops.get(i).getRatio();
+			Color color = colorStops.get(i).getColor();
+			colors[i] = new java.awt.Color(color.getRed(), color.getGreen(), color.getBlue(), (int)(color.getAlpha() * 255));
+		}
+		Paint paint = new LinearGradientPaint((float)startX, (float)startY, (float)stopX, (float)stopY, fractions, colors);
+		fSurface.setPaint(paint);
+		fPath.closePath();
+		fSurface.fill(fPath);
+		fPath = null;
 	}
 
 
@@ -217,12 +258,38 @@ public class JavaRenderer extends JPanel implements RenderInterface {
 		fSurface.setStroke(new BasicStroke((float)strokeStyle.getWeight()));
 		fSurface.setPaint(paint);
 		fSurface.draw(fPath);
+		fPath = null;
 	}
 
-	/*@Override
-	public void transform(double m00, double m01, double m10, double m11, double tx, double ty) {
-		fSurface.transform(new AffineTransform(m00, m01, m10, m11, tx, ty));
-		
-	}*/
-	
+
+	@Override
+	public void moveTo(double x, double y) {
+		if (fPath == null) fPath = new GeneralPath();
+		fPath.moveTo(x,  y);
+	}
+
+
+	@Override
+	public void lineTo(double x, double y) {
+		fPath.lineTo(x,  y);
+	}
+
+
+	@Override
+	public void quadraticCurveTo(double controlX, double controlY, double targetX, double targetY) {
+		fPath.quadTo(controlX, controlY, targetX, targetY);
+	}
+
+
+	@Override
+	public void clip() {
+		fSurface.clip(fPath);
+		fPath = null;
+	}
+
+
+	@Override
+	public void resetMask() {
+		fSurface.setClip(null);
+	}
 }

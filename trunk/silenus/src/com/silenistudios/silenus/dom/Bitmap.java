@@ -34,6 +34,12 @@ public class Bitmap implements Serializable {
 	// root directory of the project
 	String fRoot;
 	
+	// width
+	private int fWidth;
+	
+	// height
+	private int fHeight;
+	
 	
 	// read a bitmap from a node
 	public Bitmap(XMLUtility XMLUtility, StreamFactory factory, String root, Node node) throws ParseException {
@@ -52,6 +58,10 @@ public class Bitmap implements Serializable {
 		// set root
 		fRoot = root;
 		
+		// width and height in twips
+		fWidth = XMLUtility.getIntAttribute(node,  "frameRight") / 20;
+		fHeight = XMLUtility.getIntAttribute(node,  "frameBottom") / 20;
+		
 		// if the file already exists, don't re-write if
 		String outputFileName = root + "/LIBRARY/" + fSourceHref;
 		
@@ -67,6 +77,18 @@ public class Bitmap implements Serializable {
 	// get name
 	public String getName() {
 		return fName;
+	}
+	
+	
+	// get width
+	public int getWidth() {
+		return fWidth;
+	}
+	
+	
+	// get height
+	public int getHeight() {
+		return fHeight;
 	}
 	
 	

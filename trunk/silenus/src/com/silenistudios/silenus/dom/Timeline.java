@@ -4,6 +4,7 @@ import com.silenistudios.silenus.ParseException;
 import com.silenistudios.silenus.XFLLibrary;
 import com.silenistudios.silenus.xml.XMLUtility;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
@@ -35,13 +36,14 @@ public class Timeline {
 		// name of the timeline (= scene name)
 		fName = XMLUtility.getAttribute(root, "name");
 		
-		// get the different layers - we invert the order for more logical drawing
+		// get the different layers - 
 		Vector<Node> layers = XMLUtility.findNodes(root,  "DOMLayer");
-		for (int i = layers.size()-1; i >= 0; --i) {
+		//for (int i = layers.size()-1; i >= 0; --i) {
+		for (int i = 0; i < layers.size(); ++i) {
 			Node node = layers.get(i);
 			
 			// create layer
-			Layer layer = new Layer(XMLUtility, library, node);
+			Layer layer = new Layer(XMLUtility, library, fLayers, node);
 			
 			// update max frame index
 			if (layer.getMaxFrameIndex() > fMaxFrameIndex) fMaxFrameIndex = layer.getMaxFrameIndex();
@@ -49,6 +51,9 @@ public class Timeline {
 			// add to list
 			fLayers.add(layer);
 		}
+		
+		// we invert the order of the layers for more logical drawing
+		Collections.reverse(fLayers);
 	}
 	
 	

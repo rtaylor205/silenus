@@ -183,4 +183,11 @@ public class TransformationMatrix implements Serializable {
 		if (r > Math.PI) r -= 2 * Math.PI;
 		return r > 0.0;
 	}
+	
+	
+	// clone
+	@Override
+	public TransformationMatrix clone() {
+		return new TransformationMatrix(getMatrix(), getTranslateX(), getTranslateY());
+	}
 }

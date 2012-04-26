@@ -32,7 +32,6 @@ public class Graphic {
 	
 	// actually load the graphic
 	public void loadGraphic(XMLUtility XMLUtility, XFLLibrary library, Node node) throws ParseException {
-	
 		
 		// get the name
 		fName = XMLUtility.getAttribute(node, "name");
