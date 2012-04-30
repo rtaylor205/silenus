@@ -31,16 +31,12 @@ define(["compose"], function (Compose) {
 			// get the dt from the previous draw
 			var curTime = new Date().getTime();
 			var dt = curTime - that.lastDrawTime;
-			
-			// we passed the FPS threshold - draw
-			if (dt > 1000 / that.FPS) {
-				that.lastDrawTime = curTime;
-				that.callback(dt);
+			that.lastDrawTime = curTime;
+			that.callback(dt);
 				
-				// update the draw times
-				that.drawTimes[that.drawTimes.length] = dt;
-				if (that.drawTimes.length > that.FPS) that.drawTimes.shift();
-			}
+			// update the draw times
+			that.drawTimes[that.drawTimes.length] = dt;
+			if (that.drawTimes.length > that.FPS) that.drawTimes.shift();
 			
 			// keep trying
 			//if (that.enabled) requestAnimationFrame(that.redraw);
@@ -51,7 +47,7 @@ define(["compose"], function (Compose) {
 		start: function() {
 			this.lastDrawTime = new Date().getTime() - 1000 / this.FPS;
 			this.enabled = true;
-			this.timer = window.setInterval(this.redraw, 1000 / this.FPS / 2);
+			this.timer = window.setInterval(this.redraw, 1000 / this.FPS);
 			//this.redraw();
 		},
 		
