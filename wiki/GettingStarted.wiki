@@ -18,7 +18,7 @@ If you want to see what Silenus can do, you should download silenus-java.zip. Th
 
 == Use Silenus to export animation data ==
 
-The stand-alone executable silenus-java.jar will also export the animation to JSON, if you provide a second command-line argument. This data can then be used in any environment that can read JSON data. See GettingStartedJar for more information on how to export the JSON data.
+The stand-alone executable silenus-java.jar will also export the animation to JSON, if you provide a second command-line argument. This data can then be used in any environment that can read JSON data. See [http://code.google.com/p/silenus/wiki/GetingStartedJar this page] for more information on how to export the JSON data.
 
 
 == Render Silenus JSON output in the browser ==
