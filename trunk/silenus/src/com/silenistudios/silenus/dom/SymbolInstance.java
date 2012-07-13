@@ -102,9 +102,11 @@ public class SymbolInstance extends Instance {
 	
 	// return all the bitmaps used by the underlying layers
 	@Override
-	public Set<Bitmap> getUsedImages() {
+	public Set<Bitmap> getUsedImages(Set<String> symbolInstancesAlreadyChecked) {
+		if (symbolInstancesAlreadyChecked.contains(fGraphic.getName())) return new HashSet<Bitmap>();
+		symbolInstancesAlreadyChecked.add(fGraphic.getName());
 		Set<Bitmap> v = new HashSet<Bitmap>();
-		v.addAll(getGraphic().getTimeline().getUsedImages());
+		v.addAll(getGraphic().getTimeline().getUsedImages(symbolInstancesAlreadyChecked));
 		return v;
 	}
 	

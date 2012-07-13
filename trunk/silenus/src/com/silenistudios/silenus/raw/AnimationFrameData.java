@@ -22,6 +22,12 @@ public class AnimationFrameData implements Serializable {
 	}
 	
 	
+	// get instances
+	public List<AnimationInstanceData> getInstances() {
+		return fInstances;
+	}
+	
+	
 	// add an animation instance data object and return the index
 	public int addAnimationInstanceData(AnimationInstanceData data) {
 		fInstances.add(data);

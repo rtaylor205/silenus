@@ -79,8 +79,15 @@ public class Timeline {
 	
 	// get all images used for animation in this timeline
 	public Set<Bitmap> getUsedImages() {
+		return getUsedImages(new HashSet<String>());
+	}
+	
+	
+	// get all images used for animations in this timeline, while ignoring the symbols in the list
+	// TODO this trick is used to avoid symbols from being traversed twice... there is probably a cleaner way to do this.
+	public Set<Bitmap> getUsedImages(Set<String> symbolInstancesAlreadyChecked) {
 		Set<Bitmap> v = new HashSet<Bitmap>();
-		for (Layer layer : fLayers) v.addAll(layer.getUsedImages());
+		for (Layer layer : fLayers) v.addAll(layer.getUsedImages(symbolInstancesAlreadyChecked));
 		return v;
 	}
 	

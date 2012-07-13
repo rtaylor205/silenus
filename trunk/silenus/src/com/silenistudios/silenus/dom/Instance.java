@@ -254,9 +254,12 @@ public abstract class Instance {
 	
 	
 	// get used instances
-	public abstract Set<Bitmap> getUsedImages();
+	public abstract Set<Bitmap> getUsedImages(Set<String> symbolInstancesAlreadyChecked);
 	
 	
 	// get JSON for the subclass
 	public abstract String getJSON();
+	
+	// get first frame - used for defining at which point the symbol instance should start animating
+	public abstract int getFirstFrame();
 }
