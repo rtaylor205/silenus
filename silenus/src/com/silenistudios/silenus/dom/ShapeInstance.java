@@ -184,8 +184,15 @@ public class ShapeInstance extends Instance {
 	
 	// no bitmaps used by shapes
 	@Override
-	public Set<Bitmap> getUsedImages() {
+	public Set<Bitmap> getUsedImages(Set<String> symbolInstancesAlreadyChecked) {
+		System.out.println("SHAPE INSTANCE used images");
 		// none used
 		return new HashSet<Bitmap>();
+	}
+
+	// TODO it is probably possible to define a first frame for shapes too - implement this later
+	@Override
+	public int getFirstFrame() {
+		return 0;
 	}
 }

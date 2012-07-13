@@ -213,9 +213,9 @@ public class Keyframe {
 	
 	
 	// get all images used for animation in this timeline
-	Set<Bitmap> getUsedImages() {
+	Set<Bitmap> getUsedImages(Set<String> symbolInstancesAlreadyChecked) {
 		Set<Bitmap> v = new HashSet<Bitmap>();
-		for (Instance instance : fInstances) v.addAll(instance.getUsedImages());
+		for (Instance instance : fInstances) v.addAll(instance.getUsedImages(symbolInstancesAlreadyChecked));
 		return v;
 	}
 	

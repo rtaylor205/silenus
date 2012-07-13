@@ -37,8 +37,6 @@ public class RawDataRenderer implements RenderInterface {
 	// current color transformation
 	ColorManipulation fColorManipulation = null;
 	
-	// 
-	
 	
 	// render all data for a scene
 	public RawDataRenderer(Timeline scene, int width, int height, int frameRate) {
@@ -51,8 +49,8 @@ public class RawDataRenderer implements RenderInterface {
 		
 		// go over all frames and render them
 		for (int i = 0; i < scene.getAnimationLength(); ++i) {
-			renderer.render(i);
 			fData.setFrame(i);
+			renderer.render(i);
 		}
 	}
 	

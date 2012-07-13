@@ -105,9 +105,9 @@ public class Layer {
 	
 	
 	// get all images used for animation in this timeline
-	public Set<Bitmap> getUsedImages() {
+	public Set<Bitmap> getUsedImages(Set<String> symbolInstancesAlreadyChecked) {
 		Set<Bitmap> v = new HashSet<Bitmap>();
-		for (Keyframe frame : fKeyframes) v.addAll(frame.getUsedImages());
+		for (Keyframe frame : fKeyframes) v.addAll(frame.getUsedImages(symbolInstancesAlreadyChecked));
 		return v;
 	}
 	
@@ -127,6 +127,7 @@ public class Layer {
 	// get the keyframe for a corrected frame number - this number is first pulled through SymbolInstance.getCorrectFrame
 	// to account for the different loop types
 	public Keyframe getKeyframe(int correctedFrame) {
+		if (correctedFrame < 0) return null; // happens when polling for previous versions of an instance
 		
 		// look among all keyframes for a match
 		for (Keyframe keyframe : fKeyframes) {
@@ -135,6 +136,15 @@ public class Layer {
 		
 		// no match found
 		return null;
+	}
+	
+	
+	// get first keyframe that contains a given symbol
+	public Keyframe getFirstKeyframe(String libraryItemName) {
+		for (Keyframe keyframe : fKeyframes) {
+			if (keyframe.getInstance(libraryItemName) != null) return keyframe;
+		}
+		return null; // this should NEVER occur, as this function is only called whenever an instance is found in a subsequent keyframe
 	}
 	
 	

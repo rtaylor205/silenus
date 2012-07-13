@@ -75,13 +75,13 @@ public class SceneRenderer {
 		}
 		
 		// there is a next frame - interpolate
-		else if (f1.hasNextKeyframe() && f1.isTween()) {
-			interpolateFrames(f1, f1.getNextKeyframe(), frame, correctedFrame);
+		if (f1.hasNextKeyframe() && f1.isTween()) {
+			interpolateFrames(layer, f1, f1.getNextKeyframe(), frame, correctedFrame);
 		}
 		
 		// there is no next keyframe - just draw the first frame
 		else {
-			interpolateFrames(f1, f1, frame, correctedFrame);
+			interpolateFrames(layer, f1, f1, frame, correctedFrame);
 		}
 		
 		// we drew the mask - now draw the actual masked layers
@@ -106,8 +106,8 @@ public class SceneRenderer {
 	}
 	
 	
-	// interpolate between two frames
-	private void interpolateFrames(Keyframe f1, Keyframe f2, int frame, int correctedFrame) {
+	// interpolate between two frames f1 and f2 (f0 is the frame already rendered - the previous frame)
+	private void interpolateFrames(Layer layer, Keyframe f1, Keyframe f2, int frame, int correctedFrame) {
 		
 		// compute the distance between the two, unless it's the same frame (aka, there is no tween)
 		double d = 0;
@@ -126,6 +126,15 @@ public class SceneRenderer {
 			// no instance found in second frame, or no tween - just tween between ourselves
 			if (i2 == null) i2 = i1;
 			
+			// we find the first occurence of this instance in the layer - so we can correct the frame
+			Keyframe f0 = layer.getFirstKeyframe(i1.getLibraryItemName());
+			
+			// we get the first frame defined in this keyframe - this defines the offset at which we render the symbol
+			int firstFrame = f0.getInstance(i1.getLibraryItemName()).getFirstFrame();
+			
+			// correct the frame to match the first frame
+			int instanceCorrectedFrame = frame - f0.getIndex() + firstFrame;
+			
 			// save transformation matrix
 			fRenderer.save();
 			
@@ -133,7 +142,7 @@ public class SceneRenderer {
 			transformInstance(i1, i2, d, correctedFrame);
 			
 			// render the image
-			i1.render(this, frame);
+			i1.render(this, instanceCorrectedFrame);
 			
 			// done
 			resetInstance(i1, i2);

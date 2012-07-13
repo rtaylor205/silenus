@@ -42,7 +42,7 @@ public class BitmapInstance extends Instance {
 	
 	// add the bitmap
 	@Override
-	public Set<Bitmap> getUsedImages() {
+	public Set<Bitmap> getUsedImages(Set<String> symbolInstancesAlreadyChecked) {
 		Set<Bitmap> v = new HashSet<Bitmap>();
 		v.add(getBitmap());
 		return v;
@@ -58,5 +58,11 @@ public class BitmapInstance extends Instance {
 		ss.append("\"path\":\"").append(fBitmap.getSourceHref()).append("\"");
 		ss.append("}");
 		return ss.toString();
+	}
+
+
+	@Override
+	public int getFirstFrame() {
+		return 0; // always 0 for bitmaps
 	}
 }
