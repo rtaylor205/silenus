@@ -4,13 +4,16 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 
 import javax.swing.JFrame;
 
 import com.silenistudios.silenus.ParseException;
-import com.silenistudios.silenus.RawJavaRenderer;
 import com.silenistudios.silenus.XFLDocument;
+import com.silenistudios.silenus.raw.AnimationData;
 
 /**
  * This demo will take any XFL directory from the command line, and render it to screen.
@@ -19,12 +22,12 @@ import com.silenistudios.silenus.XFLDocument;
  */
 public class Main {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		
 		// if no argument is provided, we show the default example
-		String directoryName = "D:/cq3/silenus/examples/small";
+		String directoryName = "D:/cq3/silenus/examples/SheepEating/SheepEating";
+		//String directoryName = "D:/cq3/silenus/examples/bones/bones";
 		if (args.length > 0) directoryName = args[0];
-		
 		
 		// parse an XFL document and render it to screen
 		XFLDocument xfl = new XFLDocument();
@@ -33,6 +36,9 @@ public class Main {
 			// parse document
 			System.out.println("Parsing document in directory '" + directoryName + "'");
 			xfl.parseXFL(directoryName);
+			
+			System.out.println("Used images...");
+			xfl.getScene().getUsedImages();
 			
 			// draw document
 			System.out.println("Drawing document...");
@@ -48,6 +54,20 @@ public class Main {
 		}
 		catch (ParseException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+		
+		
+		// perform a raw data renderer and save to file
+		RawDataRenderer raw = new RawDataRenderer(xfl.getScene(), xfl.getWidth(), xfl.getHeight(), xfl.getFrameRate());
+		AnimationData data = raw.getAnimationData();
+		String json = data.getJSON();
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter("D:/www/silenus-renderer/upload/data.json"));
+			writer.write(json);
+			writer.close();
+		}
+		catch (IOException e) {
 			e.printStackTrace();
 		}
 		

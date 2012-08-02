@@ -176,6 +176,7 @@ public class Keyframe {
 		}
 		catch (ParseException e) {
 			// ignore this object
+			e.printStackTrace();
 			return;
 		}
 	}

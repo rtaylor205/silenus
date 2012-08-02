@@ -70,7 +70,6 @@ public class ShapeInstance extends Instance {
 		pathGenerator.generate(XMLUtility, node);
 		fStrokePaths = pathGenerator.getStrokePaths();
 		fFillPaths = pathGenerator.getFillPaths();
-		
 		// verify all the links with fill/stroke styles
 		for (Path path : fStrokePaths) if (path.getIndex() >= fStrokeStyles.size()) throw new ParseException("Non-existing stroke style refered in path");
 		for (Path path : fFillPaths) if (path.getIndex() >= fFillStyles.size()) throw new ParseException("Non-existing stroke style refered in path");
@@ -185,7 +184,7 @@ public class ShapeInstance extends Instance {
 	// no bitmaps used by shapes
 	@Override
 	public Set<Bitmap> getUsedImages(Set<String> symbolInstancesAlreadyChecked) {
-		System.out.println("SHAPE INSTANCE used images");
+		
 		// none used
 		return new HashSet<Bitmap>();
 	}
