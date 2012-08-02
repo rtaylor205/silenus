@@ -58,6 +58,7 @@ public class PathGenerator {
 				lines = getLines(XMLUtility, edge);
 			}
 			catch (ParseException e) {
+				e.printStackTrace();
 				// we really couldn't parse this line - we skip it
 				continue;
 			}
@@ -225,7 +226,6 @@ public class PathGenerator {
 	
 	// get all the points in this edge
 	private Vector<Line> getLines(XMLUtility XMLUtility, Node edge) throws ParseException {
-		
 		String edgesString = XMLUtility.getAttribute(edge, "edges");
 		
 		// split the edges string up into different instructions

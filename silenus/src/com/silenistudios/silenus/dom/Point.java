@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public class Point {
 	
 	// regular expression for parsing a point - works with hex representation
-	private static final Pattern RegExp = Pattern.compile("((?:[-]?[0-9]*[\\.]?[0-9]+)|(?:[-]?[0-9A-F]*[\\.]?[0-9A-F]+))\\s+((?:[-]?[0-9]*[\\.]?[0-9]+)|(?:[-]?[0-9A-F]*[\\.]?[0-9A-F]+))");
+	private static final Pattern RegExp = Pattern.compile("((?:[-]?[0-9]*[\\.]?[0-9]+)|(?:[-]?[#]?[0-9A-F]*[\\.]?[0-9A-F]+))\\s+((?:[-]?[0-9]*[\\.]?[0-9]+)|(?:[-]?[#]?[0-9A-F]*[\\.]?[0-9A-F]+))");
 	
 	
 	// x-value in double twips (cause half-twips can appear)
