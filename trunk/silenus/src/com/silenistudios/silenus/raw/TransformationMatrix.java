@@ -2,9 +2,8 @@ package com.silenistudios.silenus.raw;
 
 import java.io.Serializable;
 
-import com.silenistudios.silenus.xml.Node;
-
 import com.silenistudios.silenus.ParseException;
+import com.silenistudios.silenus.xml.Node;
 import com.silenistudios.silenus.xml.XMLUtility;
 
 /**
@@ -77,13 +76,15 @@ public class TransformationMatrix implements Serializable {
 	
 	// get the transformed x-value for a point
 	public double computeX(double x, double y) {
-		return getScaleX() * Math.cos(-getRotation()) * x - getScaleY() * Math.sin(-getRotation()) * y + fTranslateX;
+		//return getScaleX() * Math.cos(-getRotation()) * x - getScaleY() * Math.sin(-getRotation()) * y + fTranslateX;
+		return fMatrix[0][0] * x + fMatrix[1][0] * y + fTranslateX;
 	}
 	
 	
 	// get the transformed y-value for a point
 	public double computeY(double x, double y) {
-		return getScaleX() * Math.sin(-getRotation()) * x  + getScaleY() * Math.cos(-getRotation()) * y + fTranslateY;
+		//return getScaleX() * Math.sin(-getRotation()) * x  + getScaleY() * Math.cos(-getRotation()) * y + fTranslateY;
+		return fMatrix[0][1] * x + fMatrix[1][1] * y + fTranslateY;
 	}
 	
 	
@@ -108,13 +109,56 @@ public class TransformationMatrix implements Serializable {
 	
 	// get x scale value
 	public double getScaleX() {
-		return Math.sqrt(fMatrix[0][0]*fMatrix[0][0] + fMatrix[0][1]*fMatrix[0][1]);
+		
+		// get the q-matrix
+		double det = det();
+		double q00 = fMatrix[0][0] + Math.signum(det) * fMatrix[1][1];
+		double q01 = fMatrix[0][1] - Math.signum(det) * fMatrix[1][0];
+		double q10 = fMatrix[1][0] - Math.signum(det) * fMatrix[0][1];
+		double q11 = fMatrix[1][1] + Math.signum(det) * fMatrix[0][0];
+		
+		// compute the rotation matrix qs from q
+		double denom = Math.sqrt(q00*q00 + q10*q10);
+		q00 /= denom;
+		q01 /= denom;
+		q10 /= denom;
+		q11 /= denom;
+		
+		// we invert the 
+		double scaleX = q00 * fMatrix[0][0] + q10 * fMatrix[1][0];
+		if (det < 0 && q00 * q11 - q10 * q01 > 0) {
+			scaleX = -scaleX;
+		}
+		return scaleX;
+		// we return the x-scale, but transposed (as the qs-matrix is transposed in the code)
+		//return Math.sqrt(fMatrix[0][0]*fMatrix[0][0] + fMatrix[0][1]*fMatrix[0][1]);
 	}
 	
 	
 	// get y scale
 	public double getScaleY() {
-		return Math.sqrt(fMatrix[1][0]*fMatrix[1][0] + fMatrix[1][1]*fMatrix[1][1]);
+		
+		// get the q-matrix
+		double det = det();
+		double q00 = fMatrix[0][0] + Math.signum(det) * fMatrix[1][1];
+		double q01 = fMatrix[0][1] - Math.signum(det) * fMatrix[1][0];
+		double q10 = fMatrix[1][0] - Math.signum(det) * fMatrix[0][1];
+		double q11 = fMatrix[1][1] + Math.signum(det) * fMatrix[0][0];
+		
+		// compute the rotation matrix qs from q
+		double denom = Math.sqrt(q00*q00 + q10*q10);
+		q00 /= denom;
+		q01 /= denom;
+		q10 /= denom;
+		q11 /= denom;
+		
+		// we return the x-scale, but transposed (as the qs-matrix is transposed in the code)
+		double scaleY =  q01 * fMatrix[0][1] + q11 * fMatrix[1][1];
+		if (det < 0 && q00 * q11 - q10 * q01 < 0) {
+			scaleY = -scaleY;
+		}
+		return scaleY;
+		//return Math.sqrt(fMatrix[1][0]*fMatrix[1][0] + fMatrix[1][1]*fMatrix[1][1]);
 	}
 	
 	
@@ -132,9 +176,30 @@ public class TransformationMatrix implements Serializable {
 	
 	
 	// get rotation
+	// http://stoney.sb.org/mm/2dMatrixDecomposition.html
 	public double getRotation() {
+		
+		// get the q-matrix
+		double det = det();
+		double q00 = fMatrix[0][0] + Math.signum(det) * fMatrix[1][1];
+		double q01 = fMatrix[0][1] - Math.signum(det) * fMatrix[1][0];
+		double q10 = fMatrix[1][0] - Math.signum(det) * fMatrix[0][1];
+		double q11 = fMatrix[1][1] + Math.signum(det) * fMatrix[0][0];
+		
+		// compute the rotation matrix qs from q
+		double denom = Math.sqrt(q00*q00 + q10*q10);
+		q00 /= denom;
+		q01 /= denom;
+		q10 /= denom;
+		q11 /= denom;
+		
+		// finally, return the real decomposed rotation
+		//return Math.atan2(q10, q11); // inverted from the example on the site, as ArcTan has different parameter ordering from Math.atan2
 		return Math.atan2(fMatrix[1][0], fMatrix[0][0]);
 	}
+	
+	
+	// get 
 	
 	
 	// set matrix element
