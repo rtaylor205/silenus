@@ -58,10 +58,13 @@ public class PathGenerator {
 				lines = getLines(XMLUtility, edge);
 			}
 			catch (ParseException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 				// we really couldn't parse this line - we skip it
 				continue;
 			}
+			
+			// cubics or other editor-only lines
+			if (lines == null)	continue;
 			
 			// walk over all lines in this edge and sort them by color and start point
 			for (int i = 0; i < lines.size(); ++i) {
@@ -226,7 +229,17 @@ public class PathGenerator {
 	
 	// get all the points in this edge
 	private Vector<Line> getLines(XMLUtility XMLUtility, Node edge) throws ParseException {
-		String edgesString = XMLUtility.getAttribute(edge, "edges");
+		
+		String edgesString = null;
+		try {
+			edgesString = XMLUtility.getAttribute(edge, "edges");
+		} catch (ParseException e) {
+			if (XMLUtility.hasAttribute(edge, "cubics"))
+			{
+				return null;
+			}
+			throw new ParseException("Cannot parse line");
+		}
 		
 		// split the edges string up into different instructions
 		Matcher matcher = InstructionPattern.matcher(edgesString);
