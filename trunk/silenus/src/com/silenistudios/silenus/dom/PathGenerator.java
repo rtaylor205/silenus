@@ -225,7 +225,7 @@ public class PathGenerator {
 	// TODO another weird construct appearing in the edges list: "!10214.5 2608.5[#27EC.6F #A5D.06 10226.5 2697.5"
 	private static Pattern LinePattern = Pattern.compile("([-]?[0-9]*[\\.]?[0-9]+)\\s+([-]?[0-9]*[\\.]?[0-9]+)[S]?[0-9]*\\s*[\\|\\[]{1}\\s*([-]?[0-9]*[\\.]?[0-9]+)\\s+([-]?[0-9]*[\\.]?[0-9]+).*");
 	//private static Pattern InstructionPattern = Pattern.compile("[!\\/\\|\\[\\]S][^!\\/\\|\\[\\]S]+");
-	private static Pattern InstructionPattern = Pattern.compile("[!\\x7C\\[\\]][^!\\x7C\\[\\]]+");
+	private static Pattern InstructionPattern = Pattern.compile("[!\\x7C\\[\\]\\/][^!\\x7C\\[\\]\\/]+");
 	
 	// get all the points in this edge
 	private Vector<Line> getLines(XMLUtility XMLUtility, Node edge) throws ParseException {
