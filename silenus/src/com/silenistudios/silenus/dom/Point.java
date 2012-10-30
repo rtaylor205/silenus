@@ -1,5 +1,6 @@
 package com.silenistudios.silenus.dom;
 
+import java.math.BigInteger;
 import java.util.regex.Pattern;
 
 /**
@@ -49,13 +50,53 @@ public class Point {
 		
 		// split up the integer and fraction
 		String[] split = twip.split("\\.");
+		String fullString = split[0];
 		
 		// no fraction
-		if (split.length == 1) return Integer.parseInt(split[0], 16);
+		if (split.length == 1) fullString += "00";
 		
-		// fraction
-		else return Double.parseDouble(Integer.parseInt(split[0], 16) + "." + Integer.parseInt(split[1], 16));
+		// there is a fraction - make sure it is appended properly
+		else {
+			fullString += split[1];
+			if (split[1].length() == 1) fullString += "0"; // not sure if this ever happens, but you never know with adobe
+		}
+		
+		// use some fancy magic to convert the two's complement number to its proper integer representation
+		int value = (int)Long.parseLong(fullString, 16);
+		
+		// finally, convert to double and divide by 256.0 to compensate for moving the fixed point to the right 2 places
+		return (double)value / 256.0;
 	}
+	/*private double parseHex(String twip) {
+
+
+		// split up the integer and fraction
+		String[] split = twip.split("\\.");
+
+
+
+		//some weird large points - not sure what to do 
+		//
+		//eg #FFFFA4
+		//#FFD4
+		double a = Long.valueOf(split[0],16).longValue();
+		        double b = Long.valueOf(split[1],16).longValue();	
+		if (a > 0xFFFF)
+		a = -(0xFFFF00 - a);
+		if (b > 0xFFFF)
+		b = -(0xFFFF00 - b);
+
+
+		double c = a + b / 100.0;
+
+
+
+		// no fraction
+		if (split.length == 1) return Integer.parseInt(split[0], 16);
+		// fraction
+		//else return Double.parseDouble(Integer.parseInt(split[0], 16) + "." + Integer.parseInt(split[1], 16));
+		return c;
+		}*/
 	
 	
 	// get the reg exp for parsing a point
