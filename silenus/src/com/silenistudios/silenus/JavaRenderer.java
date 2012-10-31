@@ -92,7 +92,6 @@ public class JavaRenderer extends JPanel implements RenderInterface, ShapeRender
 				img = ImageIO.read(new File(bitmap.getAbsolutePath()));
 				fImages.put(bitmap.getAbsolutePath(), img);
 			} catch (IOException e) {
-				System.out.println("Failed to load file: " + bitmap.getAbsolutePath());
 			}
 		}
 
