@@ -18,8 +18,9 @@ require(["renderer","fpstimer"], function callback(renderModule, fpstimer) {
 			// start rendering at the correct frame rate
 			var frame = 0;
 			var timer = new fpstimer.FPSTimer(renderer.getFrameRate(), function() {
-				renderer.draw(frame);
+				//if (frame == 1) return;
 				frame = (frame + 1) % renderer.getAnimationLength();
+				renderer.draw(frame);
 				fpsCounter.innerHTML = "FPS: " + timer.getFPS();
 			});
 			timer.start();

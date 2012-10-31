@@ -111,6 +111,7 @@ define(["imageLoader", "compose"], function (imageLoader, Compose) {
 					ctx.drawImage(img, 0, 0);
 				}
 				else if (type == "shape") {
+					
 					// because we pre-render to a separate canvas for speed, we now have to offset by the bounding box coordinates
 					ctx.translate(this.json.instances[instance.instanceIndex].bb.minX, this.json.instances[instance.instanceIndex].bb.minY);
 					ctx.drawImage(this.shapes[instance.instanceIndex], 0, 0);
@@ -186,7 +187,7 @@ define(["imageLoader", "compose"], function (imageLoader, Compose) {
 			// bounding box
 			var bb = this.computeBoundingBox(instance);
 			instance.bb = bb;
-			
+
 			// create a new canvas element this size
 			var canvas = document.createElement('canvas');
 			this.shapes[instanceIndex] = canvas;
@@ -223,8 +224,8 @@ define(["imageLoader", "compose"], function (imageLoader, Compose) {
 			var bb = {
 				minX: Number.MAX_VALUE,
 				minY: Number.MAX_VALUE,
-				maxX: Number.MIN_VALUE,
-				maxY: Number.MIN_VALUE
+				maxX: -Number.MAX_VALUE,
+				maxY: -Number.MAX_VALUE
 			}
 			
 			// go over all stroke paths and fill paths, and compute the min/max of all points in the instruction set
