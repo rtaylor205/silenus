@@ -84,6 +84,7 @@ public class RawDataRenderer implements RenderInterface {
 
 	@Override
 	public void rotate(double theta) {
+		if (fTransformationMatrix.det() < 0) theta = -theta; // when a flip happened, we also invert the rotation, to compensate for something I don't fully understand
 		fTransformationMatrix = TransformationMatrix.compose(fTransformationMatrix, new TransformationMatrix(0.0, 0.0, 1.0, 1.0, theta));
 	}
 
