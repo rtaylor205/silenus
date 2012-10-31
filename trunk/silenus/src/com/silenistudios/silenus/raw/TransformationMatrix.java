@@ -162,8 +162,8 @@ public class TransformationMatrix implements Serializable {
 	}
 	
 	
-	// determinant of the matric
-	private double det() {
+	// determinant of the matrix
+	public double det() {
 		return fMatrix[0][0]*fMatrix[1][1] - fMatrix[0][1]*fMatrix[1][0];
 	}
 	
@@ -180,7 +180,7 @@ public class TransformationMatrix implements Serializable {
 	public double getRotation() {
 		
 		// get the q-matrix
-		double det = det();
+		/*double det = det();
 		double q00 = fMatrix[0][0] + Math.signum(det) * fMatrix[1][1];
 		double q01 = fMatrix[0][1] - Math.signum(det) * fMatrix[1][0];
 		double q10 = fMatrix[1][0] - Math.signum(det) * fMatrix[0][1];
@@ -194,12 +194,10 @@ public class TransformationMatrix implements Serializable {
 		q11 /= denom;
 		
 		// finally, return the real decomposed rotation
-		//return Math.atan2(q10, q11); // inverted from the example on the site, as ArcTan has different parameter ordering from Math.atan2
+		return Math.atan2(q10, q11); // inverted from the example on the site, as ArcTan has different parameter ordering from Math.atan2
+		*/
 		return Math.atan2(fMatrix[1][0], fMatrix[0][0]);
 	}
-	
-	
-	// get 
 	
 	
 	// set matrix element
