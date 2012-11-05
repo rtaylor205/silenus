@@ -64,28 +64,33 @@ public class RawDataRenderer implements RenderInterface {
 	@Override
 	public void save() {
 		fTransformationStack.add(new TransformationMatrix(fTransformationMatrix.getMatrix(), fTransformationMatrix.getTranslateX(), fTransformationMatrix.getTranslateY()));
+		//System.out.println("Pushed transformation " + fTransformationMatrix.toString());
 	}
 
 	@Override
 	public void restore() {
 		fTransformationMatrix = fTransformationStack.lastElement();
 		fTransformationStack.remove(fTransformationStack.size()-1);
+		//System.out.println("Restore transformation to " + fTransformationMatrix.toString());
 	}
 
 	@Override
 	public void scale(double x, double y) {
 		fTransformationMatrix = TransformationMatrix.compose(fTransformationMatrix, new TransformationMatrix(0.0, 0.0, x, y, 0.0));
+		//System.out.println("Scale by " + x + "," + y + " to " + fTransformationMatrix.toString());
 	}
 
 	@Override
 	public void translate(double x, double y) {
 		fTransformationMatrix = TransformationMatrix.compose(fTransformationMatrix, new TransformationMatrix(x, y, 1.0, 1.0, 0.0));
+		//System.out.println("Translate by " + x + "," + y + " to " + fTransformationMatrix.toString());
 	}
 
 	@Override
 	public void rotate(double theta) {
-		if (fTransformationMatrix.det() < 0) theta = -theta; // when a flip happened, we also invert the rotation, to compensate for something I don't fully understand
+		//if (fTransformationMatrix.det() < 0) theta = -theta; // when a flip happened, we also invert the rotation, to compensate for something I don't fully understand
 		fTransformationMatrix = TransformationMatrix.compose(fTransformationMatrix, new TransformationMatrix(0.0, 0.0, 1.0, 1.0, theta));
+		//System.out.println("Rotate by " + theta + " to " + fTransformationMatrix.toString());
 	}
 
 	@Override
@@ -97,6 +102,7 @@ public class RawDataRenderer implements RenderInterface {
 	
 	@Override
 	public void drawShapeInstance(ShapeInstance shape) {
+		//System.out.println("Draw shape " + shape.getLibraryItemName());
 		AnimationShapeData shapeData = new AnimationShapeData(shape, fTransformationMatrix);
 		fData.addInstance(shapeData);
 	}
