@@ -92,7 +92,7 @@ public abstract class AnimationInstanceData implements Serializable {
 		TransformationMatrix m = getTransformationMatrix();
 		ss.append("\"translate\":[").append(m.getTranslateX()).append(",").append(m.getTranslateY()).append("],");
 		ss.append("\"scale\":[").append(m.getScaleX()).append(",").append(m.getScaleY()).append("],");
-		ss.append("\"rotation\":").append(m.getRotation()).append(",");
+		ss.append("\"rotation\":").append(m.det() < 0 ? -m.getRotation() : m.getRotation()).append(",");
 		ss.append("\"instanceIndex\":").append(fIndex);
 		if (fMask) ss.append(",\"mask\":true");
 		if (fMasked) {
