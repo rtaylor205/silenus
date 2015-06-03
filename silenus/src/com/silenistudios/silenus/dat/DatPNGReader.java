@@ -1,49 +1,62 @@
+
 package com.silenistudios.silenus.dat;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-
-import com.silenistudios.silenus.StreamFactory;
-import com.silenistudios.silenus.ParseException;
-
 import java.io.OutputStream;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
-/**
- * Reader that reads and extracts png data from .dat files in the bin directory.
- * Based on: http://stackoverflow.com/questions/4082812/xfl-what-are-the-bin-dat-files
- * @author Karel
- *
- */
+import com.silenistudios.silenus.ParseException;
+import com.silenistudios.silenus.StreamFactory;
+
+/** Reader that reads and extracts png data from .dat files in the bin directory.
+ * Based on:
+ * http://stackoverflow.com/questions/4082812/xfl-what-are-the-bin-dat-files
+ * @author Karel */
 public class DatPNGReader implements DatReader {
-	
-	// width and height
-	short fWidth;
-	short fHeight;
-	
-	// stream
-	LittleEndianDataInputStream stream;
-	
-	// outputstream
-	OutputStream outStream;
 	
 	// buffer size
 	static final int BufferSize = 512;
+	static final String HEXES = "0123456789ABCDEF";
+	
+	public static String getHex (byte[] raw, int n) {
+		if (raw == null) {
+			return null;
+		}
+		final StringBuilder hex = new StringBuilder(2 * n);
+		for (int i = 0; i < n; ++i) {
+			final byte b = raw[i];
+			hex.append(HEXES.charAt((b & 0xF0) >> 4)).append(HEXES.charAt((b & 0x0F))).append(" ");
+			if ((i + 1) % 16 == 0)
+				hex.append("\r\n");
+		}
+		return hex.toString();
+	}
+	
+	short fHeight;
 	
 	// output stream factory
 	StreamFactory fStreamFactory;
 	
+	// width and height
+	short fWidth;
+	
+	// outputstream
+	OutputStream outStream;
+	
+	// stream
+	LittleEndianDataInputStream stream;
 	
 	// constructor
-	public DatPNGReader(StreamFactory factory) {
+	public DatPNGReader (StreamFactory factory) {
 		fStreamFactory = factory;
 	}
 	
 	// read a dat file and produce a png
 	@Override
-	public void parse(String inputFileName, String outputFileName) throws ParseException {
+	public void parse (String inputFileName, String outputFileName) throws ParseException {
 		
 		try {
 			
@@ -88,20 +101,17 @@ public class DatPNGReader implements DatReader {
 			int compressed = stream.readByte(); // 25
 			if (compressed == 1) {
 				parseCompressed();
-			}
-			else parseUncompressed();
-		}
-		catch (DataFormatException e) {
+			} else
+				parseUncompressed();
+		} catch (DataFormatException e) {
 			throw new ParseException(e.getMessage(), e);
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			throw new ParseException(e.getMessage(), e);
 		}
 	}
 	
-	
 	// compressed
-	private void parseCompressed() throws DataFormatException, ParseException, IOException {
+	private void parseCompressed () throws DataFormatException, ParseException, IOException {
 		
 		// inflater
 		Inflater decompresser = new Inflater();
@@ -121,10 +131,10 @@ public class DatPNGReader implements DatReader {
 			
 			// decompress
 			decompresser.setInput(input, 0, length);
-			int n = decompresser.inflate(buffer,  0, BufferSize);
+			int n = decompresser.inflate(buffer, 0, BufferSize);
 			while (n != 0) {
 				outStream.write(buffer, 0, n);
-				n = decompresser.inflate(buffer,  0, BufferSize);
+				n = decompresser.inflate(buffer, 0, BufferSize);
 			}
 			
 			// next piece
@@ -134,25 +144,9 @@ public class DatPNGReader implements DatReader {
 		// save output stream
 		outStream.flush();
 	}
-
-	static final String HEXES = "0123456789ABCDEF";
-	public static String getHex(byte[] raw, int n) {
-		if (raw == null) {
-			return null;
-		}
-		final StringBuilder hex = new StringBuilder(2 * n);
-		for (int i = 0; i < n; ++i) {
-			final byte b = raw[i];
-			hex.append(HEXES.charAt((b & 0xF0) >> 4))
-			.append(HEXES.charAt((b & 0x0F))).append(" ");
-			if ((i+1) % 16 == 0) hex.append("\r\n");
-		}
-		return hex.toString();
-	}
-
-
+	
 	// uncompressed
-	private void parseUncompressed() throws ParseException, ParseException, IOException {
+	private void parseUncompressed () throws ParseException, ParseException, IOException {
 		
 		// buffer
 		byte[] buffer = new byte[BufferSize];
@@ -167,5 +161,5 @@ public class DatPNGReader implements DatReader {
 		// save output stream
 		outStream.flush();
 	}
-
+	
 }

@@ -1,3 +1,4 @@
+
 package com.silenistudios.silenus.dom.fillstyles;
 
 import java.util.Vector;
@@ -6,12 +7,10 @@ import com.silenistudios.silenus.ParseException;
 import com.silenistudios.silenus.xml.Node;
 import com.silenistudios.silenus.xml.XMLUtility;
 
-/**
- * A fill style represents how a vector face is filled. It contains a particular type of paint that
- * owns a render method, that can be called to invoke the right functions on the ShapeRenderInterface.
- * @author Karel
- *
- */
+/** A fill style represents how a vector face is filled. It contains a particular
+ * type of paint that owns a render method, that can be called to invoke the
+ * right functions on the ShapeRenderInterface.
+ * @author Karel */
 public class FillStyle {
 	
 	// index
@@ -20,9 +19,8 @@ public class FillStyle {
 	// the paint
 	Paint fPaint;
 	
-	
 	// constructor
-	public FillStyle(XMLUtility XMLUtility, Node root) throws ParseException {
+	public FillStyle (XMLUtility XMLUtility, Node root) throws ParseException {
 		
 		// get index
 		fIndex = XMLUtility.getIntAttribute(root, "index");
@@ -49,21 +47,18 @@ public class FillStyle {
 		}
 	}
 	
-	
-	// get color
-	public Paint getPaint() {
-		return fPaint;
-	}
-	
-	
 	// get the index
-	public int getIndex() {
+	public int getIndex () {
 		return fIndex;
 	}
 	
-	
 	// to json
-	public String getJSON() {
+	public String getJSON () {
 		return fPaint.getJSON();
+	}
+	
+	// get color
+	public Paint getPaint () {
+		return fPaint;
 	}
 }

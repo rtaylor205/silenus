@@ -1,3 +1,4 @@
+
 package com.silenistudios.silenus.dom;
 
 import java.util.Vector;
@@ -7,18 +8,24 @@ import com.silenistudios.silenus.dom.fillstyles.Color;
 import com.silenistudios.silenus.xml.Node;
 import com.silenistudios.silenus.xml.XMLUtility;
 
-/**
- * Stroke style for a vector shape.
- * @author Karel
- *
- */
+/** Stroke style for a vector shape.
+ * @author Karel */
 public class StrokeStyle {
-
-	// index
-	int fIndex;
+	
+	// caps setting
+	public String fCaps;
 	
 	// color
 	public Color fColor = new Color();
+	
+	// joints setting
+	public String fJoints;
+	
+	// weight (width)
+	public double fWeight;
+	
+	// index
+	int fIndex;
 	
 	// solid style
 	String fSolidStyle;
@@ -26,23 +33,12 @@ public class StrokeStyle {
 	// stroke type
 	String fStrokeType;
 	
-	// weight (width)
-	public double fWeight;
-	
-	// caps setting
-	public String fCaps;
-	
-	// joints setting
-	public String fJoints;
-	
-	
-	public StrokeStyle() {
+	public StrokeStyle () {
 		
 	}
 	
-	
 	// constructor
-	public StrokeStyle(XMLUtility XMLUtility, Node root) throws ParseException {
+	public StrokeStyle (XMLUtility XMLUtility, Node root) throws ParseException {
 		
 		// get index
 		fIndex = XMLUtility.getIntAttribute(root, "index");
@@ -57,7 +53,8 @@ public class StrokeStyle {
 		
 		// get the child of the style - its name represents the type of stroke
 		Vector<Node> children = XMLUtility.getChildElements(root);
-		if (children.size() != 1) throw new ParseException("StrokeStyle does not have exactly one child defining the stroke.");
+		if (children.size() != 1)
+			throw new ParseException("StrokeStyle does not have exactly one child defining the stroke.");
 		Node stroke = children.get(0);
 		
 		// get type
@@ -74,33 +71,18 @@ public class StrokeStyle {
 		fJoints = XMLUtility.getAttribute(stroke, "joints", "round");
 	}
 	
-	
 	// get color
-	public Color getColor() {
+	public Color getColor () {
 		return fColor;
 	}
 	
-	
 	// get the index
-	public int getIndex() {
+	public int getIndex () {
 		return fIndex;
 	}
 	
-	
-	// is this a hairline style?
-	public boolean isHairline() {
-		return fSolidStyle.equals("hairline");
-	}
-	
-	
-	// get weight
-	public double getWeight() {
-		return fWeight;
-	}
-	
-	
 	// to json
-	public String getJSON() {
+	public String getJSON () {
 		StringBuilder ss = new StringBuilder();
 		ss.append("{");
 		ss.append("\"red\":").append(getColor().getRed()).append(",");
@@ -114,5 +96,15 @@ public class StrokeStyle {
 		ss.append("\"joints\":\"").append(fJoints).append("\"");
 		ss.append("}");
 		return ss.toString();
+	}
+	
+	// get weight
+	public double getWeight () {
+		return fWeight;
+	}
+	
+	// is this a hairline style?
+	public boolean isHairline () {
+		return fSolidStyle.equals("hairline");
 	}
 }

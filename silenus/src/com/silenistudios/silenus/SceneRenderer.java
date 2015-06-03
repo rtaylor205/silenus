@@ -1,3 +1,4 @@
+
 package com.silenistudios.silenus;
 
 import java.util.Collection;
@@ -13,22 +14,10 @@ import com.silenistudios.silenus.dom.Timeline;
 import com.silenistudios.silenus.raw.ColorManipulation;
 import com.silenistudios.silenus.raw.TransformationMatrix;
 
-/**
- * A scene renderer will take a loaded scene from an XFLParser, and will
- * render it to an interface called through RenderInterface.
- * @author Karel
- *
- */
+/** A scene renderer will take a loaded scene from an XFLParser, and will render
+ * it to an interface called through RenderInterface.
+ * @author Karel */
 public class SceneRenderer {
-	
-	// the scene
-	Timeline fScene;
-	
-	// the renderer
-	RenderInterface fRenderer;
-	
-	// the highest frame found in this scene - can be seen as the animation length
-	int fMaxFrameIndex;
 	
 	// stack of color manipulations - because they propagate through the symbol tree
 	Stack<ColorManipulation> fColorManipulationStack = new Stack<ColorManipulation>();
@@ -39,32 +28,31 @@ public class SceneRenderer {
 	// are we currently drawing masked instances?
 	boolean fMasked = false;
 	
+	// the highest frame found in this scene - can be seen as the animation length
+	int fMaxFrameIndex;
+	
+	// the renderer
+	RenderInterface fRenderer;
+	
+	// the scene
+	Timeline fScene;
 	
 	// constructor
-	public SceneRenderer(Timeline scene, RenderInterface renderer) {
+	public SceneRenderer (Timeline scene, RenderInterface renderer) {
 		fRenderer = renderer;
 		fScene = scene;
 	}
 	
-	// render the scene at a given frame
-	public void render(int frame) {
-		
-		// draw the different layers in order
-		Vector<Layer> layers = fScene.getLayers();
-		for (Layer layer : layers) {
-			drawLayer(layer, frame, frame, false);
-		}
-	}
-	
-	
 	// draw a layer
-	public void drawLayer(Layer layer, int frame, int correctedFrame, boolean drawMasked) {
+	public void drawLayer (Layer layer, int frame, int correctedFrame, boolean drawMasked) {
 		
 		// this is a masked layer - skip drawing it directly
-		if (!drawMasked && layer.isMaskedLayer()) return;
+		if (!drawMasked && layer.isMaskedLayer())
+			return;
 		
 		// this is a mask layer - we draw everything below this layer as a mask
-		if (layer.isMaskLayer()) fMask = true;
+		if (layer.isMaskLayer())
+			fMask = true;
 		
 		// get the appropriate keyframe for this "real frame", based on the loop type
 		Keyframe f1 = layer.getKeyframe(correctedFrame);
@@ -105,13 +93,43 @@ public class SceneRenderer {
 		}
 	}
 	
+	// render the scene at a given frame
+	public void render (int frame) {
+		
+		// draw the different layers in order
+		Vector<Layer> layers = fScene.getLayers();
+		for (Layer layer : layers) {
+			drawLayer(layer, frame, frame, false);
+		}
+	}
+	
+	// render the bitmap
+	public void renderBitmap (BitmapInstance bitmap) {
+		
+		// set color manipulation
+		if (!fColorManipulationStack.empty())
+			fRenderer.applyColorManipulation(fColorManipulationStack.peek());
+		
+		// draw the bitmap
+		bitmap.setMask(fMask);
+		bitmap.setMasked(fMasked);
+		fRenderer.drawBitmapInstance(bitmap);
+	}
+	
+	// render a shape
+	public void renderShape (ShapeInstance shape) {
+		shape.setMask(fMask);
+		shape.setMasked(fMasked);
+		fRenderer.drawShapeInstance(shape);
+	}
 	
 	// interpolate between two frames f1 and f2 (f0 is the frame already rendered - the previous frame)
-	private void interpolateFrames(Layer layer, Keyframe f1, Keyframe f2, int frame, int correctedFrame) {
+	private void interpolateFrames (Layer layer, Keyframe f1, Keyframe f2, int frame, int correctedFrame) {
 		
 		// compute the distance between the two, unless it's the same frame (aka, there is no tween)
 		double d = 0;
-		if (f1.getIndex() != f2.getIndex()) d = (double)(correctedFrame - f1.getIndex()) / (double)(f2.getIndex() - f1.getIndex());
+		if (f1.getIndex() != f2.getIndex())
+			d = (double)(correctedFrame - f1.getIndex()) / (double)(f2.getIndex() - f1.getIndex());
 		
 		// update d for ease
 		d = f1.computeEase(d);
@@ -124,7 +142,8 @@ public class SceneRenderer {
 			Instance i2 = f2.getInstance(i1.getLibraryItemName());
 			
 			// no instance found in second frame, or no tween - just tween between ourselves
-			if (i2 == null) i2 = i1;
+			if (i2 == null)
+				i2 = i1;
 			
 			// we find the first occurence of this instance in the layer - so we can correct the frame
 			Keyframe f0 = layer.getFirstKeyframe(i1.getLibraryItemName());
@@ -216,30 +235,35 @@ public class SceneRenderer {
 		}*/
 	}
 	
+	// interpolate two values
+	private double interpolateValues (double p1, double p2, double d) {
+		return p1 + (p2 - p1) * d;
+	}
+	
+	// restore the internal state to its original form after all subobjects are rendered
+	private void resetInstance (Instance i1, Instance i2) {
+		
+		// we pop the color manipulation from the stack
+		if (i1.hasColorManipulation() || i2.hasColorManipulation()) {
+			fColorManipulationStack.pop();
+		}
+	}
 	
 	// render an instance
-	private void transformInstance(Instance i1, Instance i2, double d, int frame) {
+	private void transformInstance (Instance i1, Instance i2, double d, int frame) {
 		
-		/**
-		 * STEP 1: compute scaling and rotation interpolation
-		 */
+		/** STEP 1: compute scaling and rotation interpolation */
 		
-		/**
-		 * STEP 2: interpolate the transformation point and move there for scaling and rotation
-		 */
+		/** STEP 2: interpolate the transformation point and move there for scaling
+		 * and rotation */
 		
-		
-		/**
-		 * STEP 1: interpolate the registration point by rotating it around the 
-		 */
+		/** STEP 1: interpolate the registration point by rotating it around the */
 		// translate to the transformation point
 		// NOTE: this is actually not necessary, since this is contained within the transformation matrix itself
 		//fRenderer.translate(i1.getTransformationPointX(), i1.getTransformationPointY());
 		
-		/**
-		 * STEP 2: perform transformations
-		 * Note: if we are not interpolating, i1 = i2 and this still works
-		 */
+		/** STEP 2: perform transformations Note: if we are not interpolating, i1 =
+		 * i2 and this still works */
 		
 		// normal tween animation
 		if (!i1.hasInBetweenMatrices()) {
@@ -251,9 +275,11 @@ public class SceneRenderer {
 			// interpolate rotation, and make sure we always rotate an angle smaller than 180° (shortest path)
 			double r1 = -i1.getRotation();
 			double r2 = -i2.getRotation();
-			if (Math.abs(r1-r2) > Math.PI) {
-				if (r1 < r2) r1 += 2 * Math.PI;
-				else r2 += 2 * Math.PI;
+			if (Math.abs(r1 - r2) > Math.PI) {
+				if (r1 < r2)
+					r1 += 2 * Math.PI;
+				else
+					r2 += 2 * Math.PI;
 			}
 			double rotation = interpolateValues(r1, r2, d);
 			
@@ -278,16 +304,15 @@ public class SceneRenderer {
 			fRenderer.translate(-i1.getRelativeTransformationPointX(), -i1.getRelativeTransformationPointY());
 		}
 		
-		/**
-		 * STEP 3: perform IK transformations if available
-		 */
+		/** STEP 3: perform IK transformations if available */
 		
 		// there is an IK pose in here
 		if (i1.hasInBetweenMatrices()) {
 			
 			// get max frame index and make sure we don't cross it
 			int maxFrameIndex = i1.getMaxIKFrameIndex();
-			if (frame > maxFrameIndex) frame = maxFrameIndex;
+			if (frame > maxFrameIndex)
+				frame = maxFrameIndex;
 			
 			// get transformation matrix
 			TransformationMatrix matrix = i1.getInBetweenMatrix(frame);
@@ -299,9 +324,7 @@ public class SceneRenderer {
 			fRenderer.rotate(matrix.getRotation());
 		}
 		
-		/**
-		 * STEP 4: perform color transformations
-		 */
+		/** STEP 4: perform color transformations */
 		
 		// there is color manipulation
 		if (i1.hasColorManipulation() || i2.hasColorManipulation()) {
@@ -310,42 +333,5 @@ public class SceneRenderer {
 			ColorManipulation col = ColorManipulation.interpolate(i1.getColorManipulation(), i2.getColorManipulation(), d);
 			fColorManipulationStack.push(col);
 		}
-	}
-	
-	
-	// restore the internal state to its original form after all subobjects are rendered
-	private void resetInstance(Instance i1, Instance i2) {
-
-		// we pop the color manipulation from the stack
-		if (i1.hasColorManipulation() || i2.hasColorManipulation()) {
-			fColorManipulationStack.pop();
-		}
-	}
-	
-	
-	// render the bitmap
-	public void renderBitmap(BitmapInstance bitmap) {
-		
-		// set color manipulation
-		if (!fColorManipulationStack.empty()) fRenderer.applyColorManipulation(fColorManipulationStack.peek());
-		
-		// draw the bitmap
-		bitmap.setMask(fMask);
-		bitmap.setMasked(fMasked);
-		fRenderer.drawBitmapInstance(bitmap);
-	}
-	
-	
-	// render a shape
-	public void renderShape(ShapeInstance shape) {
-		shape.setMask(fMask);
-		shape.setMasked(fMasked);
-		fRenderer.drawShapeInstance(shape);
-	}
-	
-	
-	// interpolate two values
-	private double interpolateValues(double p1, double p2, double d) {
-		return p1 + (p2 - p1) * d;
 	}
 }

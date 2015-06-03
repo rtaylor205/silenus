@@ -1,3 +1,4 @@
+
 package com.silenistudios.silenus.dom;
 
 import java.util.ArrayList;
@@ -19,30 +20,40 @@ import com.silenistudios.silenus.dom.lines.StraightLine;
 import com.silenistudios.silenus.xml.Node;
 import com.silenistudios.silenus.xml.XMLUtility;
 
-/**
- * This helper class will parse subsequent <Edge> nodes, and generate the appropriate path
- * objects from the somewhat strange data format that is used in the XML file.
- * @author Karel
- *
- */
+/** This helper class will parse subsequent <Edge> nodes, and generate the
+ * appropriate path objects from the somewhat strange data format that is used
+ * in the XML file.
+ * @author Karel */
 public class PathGenerator {
+	
+	//private static Pattern InstructionPattern = Pattern.compile("[!\\/\\|\\[\\]S][^!\\/\\|\\[\\]S]+");
+	private static Pattern InstructionPattern = Pattern.compile("[!\\x7C\\[\\]\\/][^!\\x7C\\[\\]\\/]+");
+	
+	// the pattern for parsing set of path instructions
+	// TODO what does the "[" that sometimes occurs instead of "|" mean?
+	// TODO sometimes letters come behind the numbers, such as "!895 -3557S1|134 -3366!134 -3366|135 -2925". What does it mean?
+	// TODO another weird construct appearing in the edges list: "!10214.5 2608.5[#27EC.6F #A5D.06 10226.5 2697.5"
+	private static Pattern LinePattern = Pattern
+		.compile("([-]?[0-9]*[\\.]?[0-9]+)\\s+([-]?[0-9]*[\\.]?[0-9]+)[S]?[0-9]*\\s*[\\|\\[]{1}\\s*([-]?[0-9]*[\\.]?[0-9]+)\\s+([-]?[0-9]*[\\.]?[0-9]+).*");
+	
+	// compute a hash for a point
+	private static String getPointHash (Point p) {
+		return p.getTwipX() + "_" + p.getTwipY();
+	}
 	
 	// list of completed fill paths
 	Vector<Path> fFillPaths = new Vector<Path>();
 	
-	// list of completed stroke paths
-	Vector<Path> fStrokePaths = new Vector<Path>();
-	
 	// open paths - paths that still have to be closed
 	List<Path> fOpenPaths = new LinkedList<Path>();
 	
+	// list of completed stroke paths
+	Vector<Path> fStrokePaths = new Vector<Path>();
+	
 	// constructor
-	public PathGenerator() {
-	}
-	
-	
+	public PathGenerator () {}
 	// generate the appropriate paths
-	public void generate(XMLUtility XMLUtility, Node root) throws ParseException {
+	public void generate (XMLUtility XMLUtility, Node root) throws ParseException {
 		
 		// list of all edges, sorted by fill type and then mapped by a hash defined by their endpoint for easy connection
 		Map<Integer, Map<String, List<Line>>> pathsByColor = new HashMap<Integer, Map<String, List<Line>>>();
@@ -56,15 +67,15 @@ public class PathGenerator {
 			Vector<Line> lines = null;
 			try {
 				lines = getLines(XMLUtility, edge);
-			}
-			catch (ParseException e) {
+			} catch (ParseException e) {
 				//e.printStackTrace();
 				// we really couldn't parse this line - we skip it
 				continue;
 			}
 			
 			// cubics or other editor-only lines
-			if (lines == null)	continue;
+			if (lines == null)
+				continue;
 			
 			// walk over all lines in this edge and sort them by color and start point
 			for (int i = 0; i < lines.size(); ++i) {
@@ -88,17 +99,21 @@ public class PathGenerator {
 				for (int fillType = 0; fillType < 2; ++fillType) {
 					
 					// no no fill type set
-					if (fillTypes[fillType] == -1) continue;
+					if (fillTypes[fillType] == -1)
+						continue;
 					
 					// create the path - inverted if it's a fillType1
 					Line line = lines.get(i);
-					if (fillType == 1) line = line.invert();
+					if (fillType == 1)
+						line = line.invert();
 					
 					// add to the list of paths
 					String hash = getPointHash(line.getStart());
-					if (!pathsByColor.containsKey(fillTypes[fillType])) pathsByColor.put(fillTypes[fillType], new HashMap<String, List<Line>>());
+					if (!pathsByColor.containsKey(fillTypes[fillType]))
+						pathsByColor.put(fillTypes[fillType], new HashMap<String, List<Line>>());
 					Map<String, List<Line>> paths = pathsByColor.get(fillTypes[fillType]);
-					if (!paths.containsKey(hash)) paths.put(hash, new ArrayList<Line>());
+					if (!paths.containsKey(hash))
+						paths.put(hash, new ArrayList<Line>());
 					paths.get(hash).add(line);
 				}
 			}
@@ -122,7 +137,8 @@ public class PathGenerator {
 				paths.remove(0);
 				
 				// this list is now empty - delete it from the map
-				if (paths.size() == 0) hash.remove(getPointHash(firstLine.getStart()));
+				if (paths.size() == 0)
+					hash.remove(getPointHash(firstLine.getStart()));
 				
 				// compute the hash for the endpoint
 				String endHash = getPointHash(firstLine.getStop());
@@ -131,7 +147,8 @@ public class PathGenerator {
 				List<Line> connections = hash.get(endHash);
 				
 				// invalid connection - might be unknown edge type
-				if (connections == null) continue;
+				if (connections == null)
+					continue;
 				
 				// keep going until we can't find any connections anymore
 				Line connection = firstLine;
@@ -150,7 +167,6 @@ public class PathGenerator {
 						}
 					}
 					
-					
 					// invert the last connection and add it to the list, so we can find the next angle
 					if (!alreadyInverse) {
 						connectionInverted = connection.invert();
@@ -165,10 +181,9 @@ public class PathGenerator {
 					//while (it.hasPrevious() && !it.previous().equals(connectionInverted));
 					while (it.hasPrevious()) {
 						Line p = it.previous();
-						if (!p.equals(connectionInverted)) {
-						}
-						else {
-							if (!alreadyInverse) it.remove();
+						if (!p.equals(connectionInverted)) {} else {
+							if (!alreadyInverse)
+								it.remove();
 							break;
 						}
 					}
@@ -181,9 +196,9 @@ public class PathGenerator {
 					
 					// no previous path - our own line is the smallest angle, get the largest one
 					else {
-						connection = connections.get(connections.size()-1);
-						connections.remove(connections.size()-1);
-					}					
+						connection = connections.get(connections.size() - 1);
+						connections.remove(connections.size() - 1);
+					}
 					
 					// no connections in here anymore
 					if (connections.size() == 0) {
@@ -206,36 +221,31 @@ public class PathGenerator {
 					connections = hash.get(endHash);
 					
 					// invalid connection - might be unknown edge type
-					if (connections == null) break;
+					if (connections == null)
+						break;
 				}
 			}
 		}
 	}
 	
-	
-	// compute a hash for a point
-	private static String getPointHash(Point p) {
-		return p.getTwipX() + "_" + p.getTwipY();
+	// get fill paths
+	public Vector<Path> getFillPaths () {
+		return fFillPaths;
 	}
 	
-
-	// the pattern for parsing set of path instructions
-	// TODO what does the "[" that sometimes occurs instead of "|" mean?
-	// TODO sometimes letters come behind the numbers, such as "!895 -3557S1|134 -3366!134 -3366|135 -2925". What does it mean?
-	// TODO another weird construct appearing in the edges list: "!10214.5 2608.5[#27EC.6F #A5D.06 10226.5 2697.5"
-	private static Pattern LinePattern = Pattern.compile("([-]?[0-9]*[\\.]?[0-9]+)\\s+([-]?[0-9]*[\\.]?[0-9]+)[S]?[0-9]*\\s*[\\|\\[]{1}\\s*([-]?[0-9]*[\\.]?[0-9]+)\\s+([-]?[0-9]*[\\.]?[0-9]+).*");
-	//private static Pattern InstructionPattern = Pattern.compile("[!\\/\\|\\[\\]S][^!\\/\\|\\[\\]S]+");
-	private static Pattern InstructionPattern = Pattern.compile("[!\\x7C\\[\\]\\/][^!\\x7C\\[\\]\\/]+");
+	// get stroke paths
+	public Vector<Path> getStrokePaths () {
+		return fStrokePaths;
+	}
 	
 	// get all the points in this edge
-	private Vector<Line> getLines(XMLUtility XMLUtility, Node edge) throws ParseException {
+	private Vector<Line> getLines (XMLUtility XMLUtility, Node edge) throws ParseException {
 		
 		String edgesString = null;
 		try {
 			edgesString = XMLUtility.getAttribute(edge, "edges");
 		} catch (ParseException e) {
-			if (XMLUtility.hasAttribute(edge, "cubics"))
-			{
+			if (XMLUtility.hasAttribute(edge, "cubics")) {
 				return null;
 			}
 			throw new ParseException("Cannot parse line");
@@ -254,17 +264,17 @@ public class PathGenerator {
 			
 			// add the different instructions
 			switch (instruction) {
-				
-				// move to - special case, we do not store a line for this, but just update the last stop point
+			
+			// move to - special case, we do not store a line for this, but just update the last stop point
 				case '!':
 					lastStop = parseMoveTo(s);
 					break;
-					
+				
 				case '|':
 				case '/':
 					lines.add(new StraightLine(lastStop, s));
 					break;
-					
+				
 				case '[':
 				case ']':
 					lines.add(new QuadraticCurve(lastStop, s));
@@ -276,23 +286,11 @@ public class PathGenerator {
 		return lines;
 	}
 	
-	
 	// parse moveTo
-	private Point parseMoveTo(String s) throws ParseException {
+	private Point parseMoveTo (String s) throws ParseException {
 		Matcher matcher = Point.getRegExpCompiled().matcher(s);
-		if (!matcher.find() || matcher.groupCount() != 2) throw new ParseException("Invalid move to instruction found in DOMShape: \"" + s + "\"");
+		if (!matcher.find() || matcher.groupCount() != 2)
+			throw new ParseException("Invalid move to instruction found in DOMShape: \"" + s + "\"");
 		return new Point(matcher.group(1), matcher.group(2));
-	}
-	
-	
-	// get stroke paths
-	public Vector<Path> getStrokePaths() {
-		return fStrokePaths;
-	}
-	
-	
-	// get fill paths
-	public Vector<Path> getFillPaths() {
-		return fFillPaths;
 	}
 }

@@ -1,3 +1,4 @@
+
 package com.silenistudios.silenus;
 
 import java.awt.Color;
@@ -8,26 +9,22 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-
 import javax.swing.JFrame;
 
-import com.silenistudios.silenus.ParseException;
-import com.silenistudios.silenus.XFLDocument;
 import com.silenistudios.silenus.raw.AnimationData;
 
-/**
- * This demo will take any XFL directory from the command line, and render it to screen.
- * @author Karel
- *
- */
+/** This demo will take any XFL directory from the command line, and render it to
+ * screen.
+ * @author Karel */
 public class Main {
-
-	public static void main(String[] args) throws IOException {
+	
+	public static void main (String[] args) throws IOException {
 		
 		// if no argument is provided, we show the default example
 		String directoryName = "D:/cq3/silenus/examples/SheepEating/SheepEating";
 		//String directoryName = "D:/cq3/silenus/examples/bones/bones";
-		if (args.length > 0) directoryName = args[0];
+		if (args.length > 0)
+			directoryName = args[0];
 		
 		// parse an XFL document and render it to screen
 		XFLDocument xfl = new XFLDocument();
@@ -43,20 +40,17 @@ public class Main {
 			// draw document
 			System.out.println("Drawing document...");
 			
-			/**
-			 * RawJavaRenderer will compute all the locations for the different bitmaps
-			 * once at the start and then just draws the different bitmaps at the computed locations
-			 * at real-time. This results in higher memory consumption, faster drawing.
+			/** RawJavaRenderer will compute all the locations for the different
+			 * bitmaps once at the start and then just draws the different bitmaps
+			 * at the computed locations at real-time. This results in higher
+			 * memory consumption, faster drawing.
 			 * 
-			 * Use the JavaRenderer for live animation and low memory footprint.
-			 */
+			 * Use the JavaRenderer for live animation and low memory footprint. */
 			openInJFrame(new JavaRenderer(xfl), xfl.getWidth(), xfl.getHeight(), "Silenus demo");
-		}
-		catch (ParseException e) {
+		} catch (ParseException e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
-		
 		
 		// perform a raw data renderer and save to file
 		RawDataRenderer raw = new RawDataRenderer(xfl.getScene(), xfl.getWidth(), xfl.getHeight(), xfl.getFrameRate());
@@ -66,8 +60,7 @@ public class Main {
 			BufferedWriter writer = new BufferedWriter(new FileWriter("D:/www/silenus-renderer/upload/data.json"));
 			writer.write(json);
 			writer.close();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
@@ -76,22 +69,20 @@ public class Main {
 	}
 	
 	// open a simple JFrame to display the animation
-	public static JFrame openInJFrame(Container content,
-			int width,
-			int height,
-			String title) {
+	public static JFrame openInJFrame (Container content, int width, int height, String title) {
 		JFrame frame = new JFrame(title);
 		frame.setBackground(Color.white);
 		content.setBackground(Color.white);
 		frame.setSize(width, height + 50); // 50 for the header, which is included here
 		frame.setContentPane(content);
 		frame.addWindowListener(new WindowAdapter() {
+			
 			@Override
-			public void windowClosing(WindowEvent event) {
+			public void windowClosing (WindowEvent event) {
 				System.exit(0);
 			}
 		});
 		frame.setVisible(true);
-		return(frame);
+		return (frame);
 	}
 }

@@ -1,35 +1,29 @@
+
 package com.silenistudios.silenus.dom.fillstyles;
 
-
-/**
- * A color stop used in a LinearGradient.
- * @author Karel
- *
- */
+/** A color stop used in a LinearGradient.
+ * @author Karel */
 public class ColorStop {
-	
-	// ratio
-	double fRatio;
 	
 	// color
 	Color fColor;
 	
+	// ratio
+	double fRatio;
 	
 	// create color stop
-	public ColorStop(double ratio, Color color) {
+	public ColorStop (double ratio, Color color) {
 		fRatio = ratio;
 		fColor = color;
 	}
 	
-	
 	// get color
-	public Color getColor() {
+	public Color getColor () {
 		return fColor;
 	}
 	
-	
 	// get ratio
-	public double getRatio() {
+	public double getRatio () {
 		return fRatio;
 	}
 }
