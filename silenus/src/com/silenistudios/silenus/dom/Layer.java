@@ -58,8 +58,9 @@ public class Layer {
 				throw new ParseException("Failed to get parent layer with parentLayerIndex " + parentLayerIndex + ": only "
 					+ prevLayers.size() + " layers exist");
 			Layer parentLayer = prevLayers.get(parentLayerIndex);
-			if (parentLayer.isMaskLayer())
+			if (parentLayer.isMaskLayer()) {
 				fLayerType = "masked";
+			}
 			parentLayer.addChild(this);
 		}
 		
@@ -76,8 +77,9 @@ public class Layer {
 			fMaxFrameIndex = frame.getIndex() + frame.getDuration() - 1;
 			
 			// set next key frame for the previous frame
-			if (fKeyframes.size() > 1)
+			if (fKeyframes.size() > 1) {
 				fKeyframes.get(fKeyframes.size() - 2).setNextKeyframe(frame);
+			}
 			
 			// if we're a mask, we signal this to all our instances
 			
@@ -142,9 +144,16 @@ public class Layer {
 	// get all images used for animation in this timeline
 	public Set<Bitmap> getUsedImages (Set<String> symbolInstancesAlreadyChecked) {
 		Set<Bitmap> v = new HashSet<Bitmap>();
-		for (Keyframe frame : fKeyframes)
+		for (Keyframe frame : fKeyframes) {
 			v.addAll(frame.getUsedImages(symbolInstancesAlreadyChecked));
+		}
 		return v;
+	}
+	
+	/** @return whether this is a guide layer */
+	public boolean isGuideLayer () {
+		System.err.println(fLayerType);
+		return fLayerType.equals("guide");
 	}
 	
 	// is this a masked layer?
@@ -156,6 +165,11 @@ public class Layer {
 	// is this a mask layer
 	public boolean isMaskLayer () {
 		return fLayerType.equals("mask");
+	}
+	
+	/** @return whether this is a 'normal' layer type */
+	public boolean isNormalLayer () {
+		return fLayerType.equals("normal");
 	}
 	
 	// visible?
